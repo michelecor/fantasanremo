@@ -1,8 +1,7 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Character Voting App - Fantasanremo Style</title>
   <style>
@@ -242,6 +241,9 @@
   </div>
 
   <script>
+    // Timer di sessione: 1 ora
+    const SESSION_DURATION = 3600000; // 1 ora in millisecondi
+
     // Array di utenti
     const users = [
       { username: "Michele_I", password: "Fantasanremo25" },
@@ -273,6 +275,7 @@
     ];
 
     let currentUser = null;
+    let sessionTimer = null;
 
     // Per gestire i voti di ciascun utente, usiamo un oggetto in localStorage con i voti associati all'username.
     // userVotes = {
@@ -296,13 +299,49 @@
     // Categorie di voto
     const categories = ["Canzone", "Esibizione", "Outfit"];
 
+    // Al caricamento pagina, controlliamo se c'è una session valida
+    window.addEventListener("DOMContentLoaded", () => {
+      loadAllUsersVotes();
+      // Controlliamo se esiste una session in localStorage
+      const storedUser = localStorage.getItem("currentSessionUser");
+      const sessionExpiry = localStorage.getItem("sessionExpiry");
+
+      if (storedUser && sessionExpiry) {
+        const now = Date.now();
+        if (now < parseInt(sessionExpiry)) {
+          // La sessione è ancora valida
+          currentUser = storedUser;
+          document.getElementById("loginContainer").style.display = "none";
+          document.getElementById("characters").style.display = "block";
+          document.querySelector(".results").style.display = "block";
+
+          // Avviamo il timer di logout
+          startSessionTimer(parseInt(sessionExpiry) - now);
+          // Se l'utente non ha dati, inizializziamo
+          if (!userVotes[currentUser]) {
+            userVotes[currentUser] = initUserData();
+          }
+
+          renderCharacters();
+          renderResults();
+          return; // Evitiamo di mostrare la login
+        } else {
+          // Session scaduta
+          localStorage.removeItem("currentSessionUser");
+          localStorage.removeItem("sessionExpiry");
+        }
+      }
+    });
+
     // Funzione di login
     function login() {
       const username = document.getElementById("username").value;
       const password = document.getElementById("password").value;
       const errorMessage = document.getElementById("errorMessage");
 
-      const user = users.find(u => u.username === username && u.password === password);
+      const user = users.find(
+        u => u.username === username && u.password === password
+      );
 
       if (user) {
         currentUser = username;
@@ -310,18 +349,15 @@
         document.getElementById("characters").style.display = "block";
         document.querySelector(".results").style.display = "block";
 
+        // Avviamo la session di 1 ora
+        const expiry = Date.now() + SESSION_DURATION;
+        localStorage.setItem("currentSessionUser", currentUser);
+        localStorage.setItem("sessionExpiry", expiry);
+        startSessionTimer(SESSION_DURATION);
+
         loadAllUsersVotes();
         if (!userVotes[currentUser]) {
-          // Inizializziamo se non esiste
-          userVotes[currentUser] = characters.map(name => ({
-            name,
-            image: "https://picsum.photos/seed/" + name.replace(/\s+/g, "") + "/100",
-            votes: {
-              Canzone: 0,
-              Esibizione: 0,
-              Outfit: 0
-            }
-          }));
+          userVotes[currentUser] = initUserData();
         }
         renderCharacters();
         renderResults();
@@ -329,6 +365,30 @@
       } else {
         errorMessage.innerHTML = "Incorrect username or password.";
       }
+    }
+
+    // Inizializza i dati di un utente
+    function initUserData() {
+      return characters.map(name => ({
+        name,
+        image: "https://picsum.photos/seed/" + name.replace(/\s+/g, "") + "/100",
+        votes: {
+          Canzone: 0,
+          Esibizione: 0,
+          Outfit: 0
+        }
+      }));
+    }
+
+    // Timer di sessione, effettua logout dopo timeMs
+    function startSessionTimer(timeMs) {
+      if (sessionTimer) {
+        clearTimeout(sessionTimer);
+      }
+      sessionTimer = setTimeout(() => {
+        alert("Session expired. Logging out...");
+        logout();
+      }, timeMs);
     }
 
     // Carica i voti di tutti gli utenti da localStorage
@@ -348,6 +408,7 @@
 
     // Restituisce la lista di personaggi dell'utente corrente
     function getCurrentUserCharacters() {
+      if (!currentUser) return [];
       return userVotes[currentUser] || [];
     }
 
@@ -364,13 +425,17 @@
           <div>
             <h3>${character.name}</h3>
             <div class="votes">
-              ${categories.map(cat => `
+              ${categories
+                .map(
+                  cat => `
                 <label>${cat}:</label>
                 <input type="number" 
                        min="0" max="10" 
                        value="${character.votes[cat]}" 
                        onchange="updateVote('${character.name}', '${cat}', this.value)"/>
-              `).join("")}
+              `
+                )
+                .join("")}
             </div>
           </div>
         `;
@@ -400,7 +465,6 @@
       // Per ogni utente
       for (const userKey in userVotes) {
         const userData = userVotes[userKey];
-        // userData: [ {name, image, votes: {Canzone, ...}}, ... ]
         userData.forEach(artist => {
           if (!aggregator[artist.name]) {
             aggregator[artist.name] = {
@@ -449,6 +513,15 @@
     // Logout
     function logout() {
       currentUser = null;
+      // Rimuoviamo la session
+      localStorage.removeItem("currentSessionUser");
+      localStorage.removeItem("sessionExpiry");
+
+      if (sessionTimer) {
+        clearTimeout(sessionTimer);
+        sessionTimer = null;
+      }
+
       document.getElementById("loginContainer").style.display = "flex";
       document.getElementById("characters").style.display = "none";
       document.querySelector(".results").style.display = "none";
