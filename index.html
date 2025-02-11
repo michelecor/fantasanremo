@@ -1,272 +1,273 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Character Voting App - Fantasanremo Style</title>
-  <style>
-    body {
-      font-family: "Poppins", sans-serif;
-      background: linear-gradient(to bottom, #ffd400, #001f54);
-      color: #ffffff;
-      margin: 0;
-      padding: 0;
-    }
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px;
-      background-color: #001f54;
-      color: white;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-    }
-    header h1 {
-      margin: 0;
-      font-size: 2.5em;
-      font-weight: 700;
-      text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
-    }
-    nav a {
-      color: white;
-      text-decoration: none;
-      margin: 0 15px;
-      font-weight: 600;
-      font-size: 1.1em;
-      transition: color 0.3s ease;
-    }
-    nav a:hover {
-      color: #ffd400;
-    }
-    .login-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background: linear-gradient(to bottom right, #001f54, #ffd400);
-    }
-    .login-box {
-      background: linear-gradient(to bottom, #ffffff, #f0f0f0);
-      padding: 40px;
-      border-radius: 15px;
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-      width: 350px;
-      text-align: center;
-      color: #001f54;
-    }
-    .login-box h2 {
-      font-size: 2em;
-      margin-bottom: 20px;
-      color: #ffd400;
-    }
-    .login-box label {
-      display: block;
-      margin-bottom: 10px;
-      font-weight: 600;
-    }
-    .login-box input {
-      width: 100%;
-      padding: 12px;
-      margin-bottom: 20px;
-      border: 1px solid #001f54;
-      border-radius: 8px;
-      font-size: 1em;
-      box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
-    .login-box input:focus {
-      border-color: #ffd400;
-      outline: none;
-    }
-    .login-box button {
-      width: 100%;
-      padding: 12px;
-      background-color: #001f54;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 1.2em;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background-color 0.3s ease, transform 0.3s ease;
-    }
-    .login-box button:hover {
-      background-color: #ffd400;
-      color: #001f54;
-      transform: scale(1.05);
-    }
-    .error {
-      color: red;
-      font-size: 0.9em;
-      margin-bottom: 10px;
-    }
-    #characters {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 20px;
-      padding: 40px 20px;
-      background: linear-gradient(to bottom, rgba(255, 212, 0, 0.8), rgba(0, 31, 84, 0.9));
-      color: white;
-    }
-    .character {
-      border: 2px solid #ffd400;
-      border-radius: 10px;
-      padding: 20px;
-      background-color: #ffffff;
-      color: #001f54;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-      text-align: center;
-    }
-    .character img {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      object-fit: cover;
-      margin-bottom: 10px;
-    }
-    .character h3 {
-      margin: 10px 0;
-      font-size: 1.5em;
-    }
-    .votes label {
-      font-weight: 600;
-      margin-top: 10px;
-    }
-    .votes input {
-      width: 50px;
-      padding: 5px;
-      margin: 10px 0;
-      border: 1px solid #001f54;
-      border-radius: 5px;
-      text-align: center;
-    }
-    .results {
-      padding: 40px 20px;
-      background-color: #f7f9fc;
-    }
-    .results h2 {
-      text-align: center;
-      margin-bottom: 20px;
-      font-size: 2em;
-      color: #001f54;
-    }
-    .results table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 20px 0;
-      background-color: #ffffff;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      border-radius: 10px;
-      overflow: hidden;
-    }
-    .results th,
-    .results td {
-      padding: 15px;
-      text-align: center;
-      border-bottom: 1px solid #ddd;
-      font-size: 1.1em;
-    }
-    .results th {
-      background-color: #001f54;
-      color: white;
-      text-transform: uppercase;
-      font-size: 1em;
-      letter-spacing: 1px;
-    }
-    .results td {
-      color: #333;
-    }
-    .results tr:hover {
-      background-color: #f1f1f1;
-    }
-    @media (max-width: 768px) {
-      #characters {
-        grid-template-columns: 1fr;
-      }
-      header h1 {
-        font-size: 2em;
-      }
-      .results th,
-      .results td {
-        font-size: 0.9em;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Character Voting App - Fantasanremo Style</title>
+<style>
+body {
+font-family: "Poppins", sans-serif;
+background: linear-gradient(to bottom, #ffd400, #001f54);
+color: #ffffff;
+margin: 0;
+padding: 0;
+}
+header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 20px;
+background-color: #001f54;
+color: white;
+box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+position: sticky;
+top: 0;
+z-index: 1000;
+}
+header h1 {
+margin: 0;
+font-size: 2.5em;
+font-weight: 700;
+text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+}
+nav a {
+color: white;
+text-decoration: none;
+margin: 0 15px;
+font-weight: 600;
+font-size: 1.1em;
+transition: color 0.3s ease;
+}
+nav a:hover {
+color: #ffd400;
+}
+.login-container {
+display: flex;
+justify-content: center;
+align-items: center;
+height: 100vh;
+background: linear-gradient(to bottom right, #001f54, #ffd400);
+}
+.login-box {
+background: linear-gradient(to bottom, #ffffff, #f0f0f0);
+padding: 40px;
+border-radius: 15px;
+box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+width: 350px;
+text-align: center;
+color: #001f54;
+}
+.login-box h2 {
+font-size: 2em;
+margin-bottom: 20px;
+color: #ffd400;
+}
+.login-box label {
+display: block;
+margin-bottom: 10px;
+font-weight: 600;
+}
+.login-box input {
+width: 100%;
+padding: 12px;
+margin-bottom: 20px;
+border: 1px solid #001f54;
+border-radius: 8px;
+font-size: 1em;
+box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+.login-box input:focus {
+border-color: #ffd400;
+outline: none;
+}
+.login-box button {
+width: 100%;
+padding: 12px;
+background-color: #001f54;
+color: white;
+border: none;
+border-radius: 8px;
+font-size: 1.2em;
+font-weight: 600;
+cursor: pointer;
+transition: background-color 0.3s ease, transform 0.3s ease;
+}
+.login-box button:hover {
+background-color: #ffd400;
+color: #001f54;
+transform: scale(1.05);
+}
+.error {
+color: red;
+font-size: 0.9em;
+margin-bottom: 10px;
+}
+#characters {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+gap: 20px;
+padding: 40px 20px;
+background: linear-gradient(to bottom, rgba(255, 212, 0, 0.8), rgba(0, 31, 84, 0.9));
+color: white;
+}
+.character {
+border: 2px solid #ffd400;
+border-radius: 10px;
+padding: 20px;
+background-color: #ffffff;
+color: #001f54;
+box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+text-align: center;
+}
+.character img {
+width: 120px;
+height: 120px;
+border-radius: 50%;
+object-fit: cover;
+margin-bottom: 10px;
+}
+.character h3 {
+margin: 10px 0;
+font-size: 1.5em;
+}
+.votes label {
+font-weight: 600;
+margin-top: 10px;
+}
+.votes input {
+width: 50px;
+padding: 5px;
+margin: 10px 0;
+border: 1px solid #001f54;
+border-radius: 5px;
+text-align: center;
+}
+.results {
+padding: 40px 20px;
+background-color: #f7f9fc;
+}
+.results h2 {
+text-align: center;
+margin-bottom: 20px;
+font-size: 2em;
+color: #001f54;
+}
+.results table {
+width: 100%;
+border-collapse: collapse;
+margin: 20px 0;
+background-color: #ffffff;
+box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+border-radius: 10px;
+overflow: hidden;
+}
+.results th,
+.results td {
+padding: 15px;
+text-align: center;
+border-bottom: 1px solid #ddd;
+font-size: 1.1em;
+}
+.results th {
+background-color: #001f54;
+color: white;
+text-transform: uppercase;
+font-size: 1em;
+letter-spacing: 1px;
+}
+.results td {
+color: #333;
+}
+.results tr:hover {
+background-color: #f1f1f1;
+}
+@media (max-width: 768px) {
+#characters {
+grid-template-columns: 1fr;
+}
+header h1 {
+font-size: 2em;
+}
+.results th,
+.results td {
+font-size: 0.9em;
+}
+}
+</style>
 
-  <!-- Firebase (Compat libraries per semplicità) -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<!-- Firebase (Compat libraries per semplicità) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
-  <header>
-    <h1>Fantasanremo Voting App</h1>
-    <nav>
-      <a href="#characters">Vote</a>
-      <a href="#results">Results</a>
-    </nav>
-  </header>
+<header>
+<h1>Fantasanremo Voting App</h1>
+<nav>
+<a href="#characters">Vote</a>
+<a href="#results">Results</a>
+</nav>
+</header>
 
-  <div class="login-container" id="loginContainer">
-    <div class="login-box">
-      <h2>Login</h2>
-      <div class="error" id="errorMessage"></div>
-      <label for="username">Username</label>
-      <input type="text" id="username" placeholder="Enter Username" />
-      <label for="password">Password</label>
-      <input type="password" id="password" placeholder="Enter Password" />
-      <button onclick="login()">Login</button>
-    </div>
-  </div>
+<div class="login-container" id="loginContainer">
+<div class="login-box">
+<h2>Login</h2>
+<div class="error" id="errorMessage"></div>
+<label for="username">Username</label>
+<input type="text" id="username" placeholder="Enter Username" />
+<label for="password">Password</label>
+<input type="password" id="password" placeholder="Enter Password" />
+<button onclick="login()">Login</button>
+</div>
+</div>
 
-  <div id="characters" style="display: none;"></div>
+<div id="characters" style="display: none;"></div>
 
-  <div class="results" style="display: none;">
-    <h2>Elenco artisti </h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Artista</th>
-          <th>Canzone</th>
-          <th>Esibizione</th>
-          <th>Outfit</th>
-          <th>Total</th>
-        </tr>
-      </thead>
-      <tbody id="resultsTableBody">
-        <!-- Risultati sommati di tutti gli utenti -->
-      </tbody>
-    </table>
-  </div>
+<div class="results" style="display: none;">
+<h2>Elenco artisti </h2>
+<table>
+<thead>
+<tr>
+<th>Artista</th>
+<th>Canzone</th>
+<th>Esibizione</th>
+<th>Outfit</th>
+<th>Total</th>
+</tr>
+</thead>
+<tbody id="resultsTableBody">
+<!-- Risultati sommati di tutti gli utenti -->
+</tbody>
+</table>
+</div>
 
-  <script>
-    /**************************************************************
-     * 1) CONFIGURAZIONE FIREBASE                                 *
-     **************************************************************/
-    const firebaseConfig = {
-      apiKey: "AIzaSyC064A...",  // <-- Sostituisci con le tue
-      authDomain: "fantasanremo-e87e8.firebaseapp.com",
-      projectId: "fantasanremo-e87e8",
-      storageBucket: "fantasanremo-e87e8.appspot.com",
-      messagingSenderId: "133625821322",
-      appId: "1:133625821322:web:268300a4ba9d09fa0b5573"
-    };
+<script>
+/**************************************************************
+    * 1) CONFIGURAZIONE FIREBASE                                 *
+    **************************************************************/
+const firebaseConfig = {
+apiKey: "AIzaSyC064A...",  // <-- Sostituisci con le tue
+authDomain: "fantasanremo-e87e8.firebaseapp.com",
+projectId: "fantasanremo-e87e8",
+storageBucket: "fantasanremo-e87e8.appspot.com",
+messagingSenderId: "133625821322",
+appId: "1:133625821322:web:268300a4ba9d09fa0b5573"
+};
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
-    const SESSION_DURATION = 3600000; // 1 ora in ms
-    let currentUser = null;
-    let sessionTimer = null;
+const SESSION_DURATION = 3600000; // 1 ora in ms
+let currentUser = null;
+let sessionTimer = null;
 
-    /**************************************************************
-     * 2) LISTA UTENTI                                            *
-     **************************************************************/
-    const users = [
-      { username: "Michele_I", password: "Fantasanremo25" },
-      { username: "Michele_C", password: "Fantasanremo25" },
-      { username: "Angelo_R", password: "Fantasanremo25" },
+/**************************************************************
+    * 2) LISTA UTENTI                                            *
+    **************************************************************/
+const users = [
+{ username: "Michele_I", password: "Fantasanremo25" },
+{ username: "Michele_C", password: "Fantasanremo25" },
+{ username: "Angelo_R", password: "Fantasanremo25" },
+      // Aggiungi gli altri...
       { username: "Michele_M", password: "Fantasanremo25" },
       { username: "Chieppo", password: "Fantasanremo25" },
       { username: "Pakistano", password: "Fantasanremo25" },
@@ -290,243 +291,240 @@
       { username: "Flavia", password: "Fantasanremo25" },
       { username: "Giusy", password: "Fantasanremo25" },
       { username: "Alessandra", password: "Fantasanremo25" }
-    ];
+];
 
-    /**************************************************************
-     * 3) LISTA ARTISTI + CATEGORIE                               *
-     **************************************************************/
-    const characters = [
-      "Achille Lauro", "Bresh", "Brunori SAS", "Clara", "Coma_Cose",
-      "Elodie", "Emis Killa", "Fedez", "Francesca Michielin", "Francesco Gabbani",
-      "Gaia", "Giorgia", "Irama", "Joan Thiele", "Lucio Corsi",
-      "Marcella Bella", "Massimo Ranieri", "Modà", "Noemi", "Olly",
-      "Rkomi", "Rocco Hunt", "Rose Villain", "Sarah Toscano", "Serena Brancale",
-      "Shablo ft. Guè, Joshua e Tormento", "Simone Cristicchi", "The Kolors", "Tony Effe", "Willie Peyote"
-    ].sort();
+/**************************************************************
+    * 3) LISTA ARTISTI + CATEGORIE                               *
+    **************************************************************/
+const characters = [
+"Achille Lauro", "Bresh", "Brunori SAS", "Clara", "Coma_Cose",
+"Elodie", "Emis Killa", "Fedez", "Francesca Michielin", "Francesco Gabbani",
+"Gaia", "Giorgia", "Irama", "Joan Thiele", "Lucio Corsi",
+"Marcella Bella", "Massimo Ranieri", "Modà", "Noemi", "Olly",
+"Rkomi", "Rocco Hunt", "Rose Villain", "Sarah Toscano", "Serena Brancale",
+"Shablo ft. Guè, Joshua e Tormento", "Simone Cristicchi", "The Kolors", "Tony Effe", "Willie Peyote"
+].sort();
 
-    const categories = ["Canzone", "Esibizione", "Outfit"];
+const categories = ["Canzone", "Esibizione", "Outfit"];
 
-    /**************************************************************
-     * 4) CONTROLLA EVENTUALI SESSIONI GIA' ATTIVE                *
-     **************************************************************/
-    window.addEventListener("DOMContentLoaded", async () => {
-      const storedUser = localStorage.getItem("currentSessionUser");
-      const sessionExpiry = localStorage.getItem("sessionExpiry");
+/**************************************************************
+    * 4) CONTROLLA EVENTUALI SESSIONI GIA' ATTIVE                *
+    **************************************************************/
+window.addEventListener("DOMContentLoaded", async () => {
+const storedUser = localStorage.getItem("currentSessionUser");
+const sessionExpiry = localStorage.getItem("sessionExpiry");
 
-      if (storedUser && sessionExpiry) {
-        const now = Date.now();
-        if (now < parseInt(sessionExpiry)) {
-          currentUser = storedUser;
-          document.getElementById("loginContainer").style.display = "none";
-          document.getElementById("characters").style.display = "block";
-          document.querySelector(".results").style.display = "block";
+if (storedUser && sessionExpiry) {
+const now = Date.now();
+if (now < parseInt(sessionExpiry)) {
+currentUser = storedUser;
+document.getElementById("loginContainer").style.display = "none";
+document.getElementById("characters").style.display = "block";
+document.querySelector(".results").style.display = "block";
 
-          startSessionTimer(parseInt(sessionExpiry) - now);
+startSessionTimer(parseInt(sessionExpiry) - now);
 
-          await renderCharacters(); // Carichiamo i dati
-          await renderResults();
-          return;
-        } else {
-          // Session scaduta
-          localStorage.removeItem("currentSessionUser");
-          localStorage.removeItem("sessionExpiry");
-        }
-      }
-    });
+await renderCharacters(); // Carichiamo i dati
+await renderResults();
+return;
+} else {
+// Session scaduta
+localStorage.removeItem("currentSessionUser");
+localStorage.removeItem("sessionExpiry");
+}
+}
+});
 
-    /**************************************************************
-     * 5) LOGIN                                                   *
-     **************************************************************/
-    async function login() {
-      const username = document.getElementById("username").value;
-      const password = document.getElementById("password").value;
-      const errorMessage = document.getElementById("errorMessage");
+/**************************************************************
+    * 5) LOGIN                                                   *
+    **************************************************************/
+async function login() {
+const username = document.getElementById("username").value;
+const password = document.getElementById("password").value;
+const errorMessage = document.getElementById("errorMessage");
 
-      const user = users.find(u => u.username === username && u.password === password);
-      if (user) {
-        currentUser = username;
-        document.getElementById("loginContainer").style.display = "none";
-        document.getElementById("characters").style.display = "block";
-        document.querySelector(".results").style.display = "block";
+const user = users.find(u => u.username === username && u.password === password);
+if (user) {
+currentUser = username;
+document.getElementById("loginContainer").style.display = "none";
+document.getElementById("characters").style.display = "block";
+document.querySelector(".results").style.display = "block";
 
-        // Session di 1 ora
-        const expiry = Date.now() + SESSION_DURATION;
-        localStorage.setItem("currentSessionUser", currentUser);
-        localStorage.setItem("sessionExpiry", expiry);
-        startSessionTimer(SESSION_DURATION);
+// Session di 1 ora
+const expiry = Date.now() + SESSION_DURATION;
+localStorage.setItem("currentSessionUser", currentUser);
+localStorage.setItem("sessionExpiry", expiry);
+startSessionTimer(SESSION_DURATION);
 
-        // Render + Dati
-        await renderCharacters();
-        await renderResults();
-      } else {
-        errorMessage.innerHTML = "Incorrect username or password.";
-      }
-    }
+// Render + Dati
+await renderCharacters();
+await renderResults();
+} else {
+errorMessage.innerHTML = "Incorrect username or password.";
+}
+}
 
-    /**************************************************************
-     * 6) GESTIONE DATI UTENTE SU FIRESTORE                       *
-     **************************************************************/
+/**************************************************************
+    * 6) GESTIONE DATI UTENTE SU FIRESTORE                       *
+    **************************************************************/
 
-    // Ogni utente ha un doc in Firestore: /usersVotes/currentUser
-    // con structure: { votesArray: [ { name, image, votes: {...} }, ... ] }
+// Ogni utente ha un doc in Firestore: /usersVotes/currentUser
+// con structure: { votesArray: [ { name, image, votes: {...} }, ... ] }
 
-    // Inizializza i dati di un utente
-    function initNewUserVotes() {
-      return characters.map(name => ({
-        name,
-        image: "https://picsum.photos/seed/" + name.replace(/\s+/g, "") + "/100",
-        votes: { Canzone: 0, Esibizione: 0, Outfit: 0 }
-         
-      }));
-    }
+// Inizializza i dati di un utente
+function initNewUserVotes() {
+return characters.map(name => ({
+name,
+image: "https://picsum.photos/seed/" + name.replace(/\s+/g, "") + "/100",
+votes: { Canzone: 0, Esibizione: 0, Outfit: 0 }
+}));
+}
 
-    // Ritorna l'array con i voti dell'utente corrente
-    async function getCurrentUserVotes() {
-      if (!currentUser) return [];
-      const docRef = db.collection("usersVotes").doc(currentUser);
-      const snap = await docRef.get();
-      if (snap.exists) {
-        return snap.data().votesArray;
-      } else {
-        // Creiamo un doc se non esiste
-        const newArray = initNewUserVotes();
-        await docRef.set({ votesArray: newArray });
-        return newArray;
-      }
-    }
+// Ritorna l'array con i voti dell'utente corrente
+async function getCurrentUserVotes() {
+if (!currentUser) return [];
+const docRef = db.collection("usersVotes").doc(currentUser);
+const snap = await docRef.get();
+if (snap.exists) {
+return snap.data().votesArray;
+} else {
+// Creiamo un doc se non esiste
+const newArray = initNewUserVotes();
+await docRef.set({ votesArray: newArray });
+return newArray;
+}
+}
 
-    // Salva i voti dell'utente corrente
-    async function saveCurrentUserVotes(votesArray) {
-      if (!currentUser) return;
-      await db.collection("usersVotes").doc(currentUser).set({
-        votesArray
-      });
-    }
+// Salva i voti dell'utente corrente
+async function saveCurrentUserVotes(votesArray) {
+if (!currentUser) return;
+await db.collection("usersVotes").doc(currentUser).set({
+votesArray
+});
+}
 
-    // Update di un singolo voto
-    async function updateVote(charName, category, value) {
-      const numericValue = Math.max(0, Math.min(10, parseInt(value) || 0));
+// Update di un singolo voto
+async function updateVote(charName, category, value) {
+const numericValue = Math.max(0, Math.min(10, parseInt(value) || 0));
 
-      const votesArray = await getCurrentUserVotes();
-      const idx = votesArray.findIndex(c => c.name === charName);
-      if (idx >= 0) {
-        votesArray[idx].votes[category] = numericValue;
-        votesArray[idx].locked = true;
-        await saveCurrentUserVotes(votesArray);
-        renderResults(); // Ricalcoliamo i risultati globali
-      }
-    }
+const votesArray = await getCurrentUserVotes();
+const idx = votesArray.findIndex(c => c.name === charName);
+if (idx >= 0) {
+votesArray[idx].votes[category] = numericValue;
+await saveCurrentUserVotes(votesArray);
+renderResults(); // Ricalcoliamo i risultati globali
+}
+}
 
-    /**************************************************************
-     * 7) RENDER PERSONAGGI + RISULTATI                           *
-     **************************************************************/
-    async function renderCharacters() {
-      const characterContainer = document.getElementById("characters");
-      characterContainer.innerHTML = "";
+/**************************************************************
+    * 7) RENDER PERSONAGGI + RISULTATI                           *
+    **************************************************************/
+async function renderCharacters() {
+const characterContainer = document.getElementById("characters");
+characterContainer.innerHTML = "";
 
-      const votesArray = await getCurrentUserVotes();
+const votesArray = await getCurrentUserVotes();
 
-      votesArray.forEach(character => {
-        const div = document.createElement("div");
-    
-        div.className = "character";
-        div.innerHTML = `
-          <img src="${character.image}" alt="${character.name}" />
-          <div>
-            <h3>${character.name}</h3>
-            <div class="votes">
-              ${categories.map(cat => `
-                <label>${cat}:</label>
-                <input type="number" 
-                       min="0" max="10"
-                       value="${character.votes[cat]}" 
-                       onchange="updateVote('${character.name}', '${cat}', this.value)"/>
-              `).join("")}
-            </div>
-          </div>
-        `;
-        characterContainer.appendChild(div);
-      });
-    }
+votesArray.forEach(character => {
+const div = document.createElement("div");
+div.className = "character";
+div.innerHTML = `
+         <img src="${character.image}" alt="${character.name}" />
+         <div>
+           <h3>${character.name}</h3>
+           <div class="votes">
+             ${categories.map(cat => `
+               <label>${cat}:</label>
+               <input type="number" 
+                      min="0" max="10"
+                      value="${character.votes[cat]}" 
+                      onchange="updateVote('${character.name}', '${cat}', this.value)"/>
+             `).join("")}
+           </div>
+         </div>
+       `;
+characterContainer.appendChild(div);
+});
+}
 
-    // Somma i voti di tutti gli utenti
-    async function renderResults() {
-      const resultsTableBody = document.getElementById("resultsTableBody");
-      resultsTableBody.innerHTML = "";
+// Somma i voti di tutti gli utenti
+async function renderResults() {
+const resultsTableBody = document.getElementById("resultsTableBody");
+resultsTableBody.innerHTML = "";
 
-      // Leggiamo tutti i doc in /usersVotes
-      const aggregator = {};
-      const snapshot = await db.collection("usersVotes").get();
-      snapshot.forEach(docSnap => {
-        const arr = docSnap.data().votesArray || [];
-        arr.forEach(artist => {
-          if (!aggregator[artist.name]) {
-            aggregator[artist.name] = {
-              name: artist.name,
-              votes: { Canzone: 0, Esibizione: 0, Outfit: 0 }
-            };
-          }
-          categories.forEach(cat => {
-            aggregator[artist.name].votes[cat] += artist.votes[cat];
-          });
-        });
-      });
+// Leggiamo tutti i doc in /usersVotes
+const aggregator = {};
+const snapshot = await db.collection("usersVotes").get();
+snapshot.forEach(docSnap => {
+const arr = docSnap.data().votesArray || [];
+arr.forEach(artist => {
+if (!aggregator[artist.name]) {
+aggregator[artist.name] = {
+name: artist.name,
+votes: { Canzone: 0, Esibizione: 0, Outfit: 0 }
+};
+}
+categories.forEach(cat => {
+aggregator[artist.name].votes[cat] += artist.votes[cat];
+});
+});
+});
 
-      // Convert in array
-      const globalData = Object.values(aggregator).sort((a, b) =>
-        a.name.localeCompare(b.name)
-      );
+// Convert in array
+const globalData = Object.values(aggregator).sort((a, b) =>
+a.name.localeCompare(b.name)
+);
 
-      globalData.forEach(artist => {
-        const total = categories.reduce((sum, cat) => sum + artist.votes[cat], 0);
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${artist.name}</td>
-          <td>${artist.votes.Canzone}</td>
-          <td>${artist.votes.Esibizione}</td>
-          <td>${artist.votes.Outfit}</td>
-          <td>${total}</td>
-        `;
-        resultsTableBody.appendChild(row);
-      });
-    }
+globalData.forEach(artist => {
+const total = categories.reduce((sum, cat) => sum + artist.votes[cat], 0);
+const row = document.createElement("tr");
+row.innerHTML = `
+         <td>${artist.name}</td>
+         <td>${artist.votes.Canzone}</td>
+         <td>${artist.votes.Esibizione}</td>
+         <td>${artist.votes.Outfit}</td>
+         <td>${total}</td>
+       `;
+resultsTableBody.appendChild(row);
+});
+}
 
-    /**************************************************************
-     * 8) SESSION TIMER & LOGOUT                                  *
-     **************************************************************/
-    function startSessionTimer(timeMs) {
-      if (sessionTimer) clearTimeout(sessionTimer);
-      sessionTimer = setTimeout(() => {
-        alert("Session expired. Logging out...");
-        logout();
-      }, timeMs);
-    }
+/**************************************************************
+    * 8) SESSION TIMER & LOGOUT                                  *
+    **************************************************************/
+function startSessionTimer(timeMs) {
+if (sessionTimer) clearTimeout(sessionTimer);
+sessionTimer = setTimeout(() => {
+alert("Session expired. Logging out...");
+logout();
+}, timeMs);
+}
 
-    function logout() {
-      currentUser = null;
-      localStorage.removeItem("currentSessionUser");
-      localStorage.removeItem("sessionExpiry");
-      if (sessionTimer) clearTimeout(sessionTimer);
+function logout() {
+currentUser = null;
+localStorage.removeItem("currentSessionUser");
+localStorage.removeItem("sessionExpiry");
+if (sessionTimer) clearTimeout(sessionTimer);
 
-      document.getElementById("loginContainer").style.display = "flex";
-      document.getElementById("characters").style.display = "none";
-      document.querySelector(".results").style.display = "none";
-    }
+document.getElementById("loginContainer").style.display = "flex";
+document.getElementById("characters").style.display = "none";
+document.querySelector(".results").style.display = "none";
+}
 
-    /**************************************************************
-     * 9) REALTIME (OPZIONALE)                                    *
-     **************************************************************/
-    // Se vuoi aggiornare i risultati in tempo reale (anche su altri device),
-    // rimuovi i commenti:
-    *
-    db.collection("usersVotes").onSnapshot(() => {
-      // Ricarichiamo la tabella globale
-      renderResults();
-      // Se vuoi aggiornare anche i voti dell'utente in corso
-      // (es. per riflettere cambi da altri dispositivi):
-      if (currentUser) renderCharacters();
-    });
-    */
-  </script>
+/**************************************************************
+    * 9) REALTIME (OPZIONALE)                                    *
+    **************************************************************/
+// Se vuoi aggiornare i risultati in tempo reale (anche su altri device),
+// rimuovi i commenti:
+/*
+   db.collection("usersVotes").onSnapshot(() => {
+     // Ricarichiamo la tabella globale
+     renderResults();
+     // Se vuoi aggiornare anche i voti dell'utente in corso
+     // (es. per riflettere cambi da altri dispositivi):
+     if (currentUser) renderCharacters();
+   });
+   */
+</script>
 </body>
 </html>
