@@ -245,7 +245,7 @@
      * 1) CONFIGURAZIONE FIREBASE                                 *
      **************************************************************/
     const firebaseConfig = {
-      apiKey: "AIzaSyC064A...",
+      apiKey: "AIzaSyC064A...",  // <-- Sostituisci con le tue
       authDomain: "fantasanremo-e87e8.firebaseapp.com",
       projectId: "fantasanremo-e87e8",
       storageBucket: "fantasanremo-e87e8.appspot.com",
@@ -267,7 +267,29 @@
       { username: "Michele_I", password: "Fantasanremo25" },
       { username: "Michele_C", password: "Fantasanremo25" },
       { username: "Angelo_R", password: "Fantasanremo25" },
-      // ... Aggiungi tutti gli altri ...
+      { username: "Michele_M", password: "Fantasanremo25" },
+      { username: "Chieppo", password: "Fantasanremo25" },
+      { username: "Pakistano", password: "Fantasanremo25" },
+      { username: "Luigi_O", password: "Fantasanremo25" },
+      { username: "Carmine", password: "Fantasanremo25" },
+      { username: "Gennaro", password: "Fantasanremo25" },
+      { username: "Fabrizio", password: "Fantasanremo25" },
+      { username: "Alessandro", password: "Fantasanremo25" },
+      { username: "Marco_B", password: "Fantasanremo25" },
+      { username: "Marco_S", password: "Fantasanremo25" },
+      { username: "Leo", password: "Fantasanremo25" },
+      { username: "Giovanni", password: "Fantasanremo25" },
+      { username: "Gianluca", password: "Fantasanremo25" },
+      { username: "Diomede", password: "Fantasanremo25" },
+      { username: "Angelo_F", password: "Fantasanremo25" },
+      { username: "Dario", password: "Fantasanremo25" },
+      { username: "Emy", password: "Fantasanremo25" },
+      { username: "Anita", password: "Fantasanremo25" },
+      { username: "Miriana", password: "Fantasanremo25" },
+      { username: "Giorgia", password: "Fantasanremo25" },
+      { username: "Flavia", password: "Fantasanremo25" },
+      { username: "Giusy", password: "Fantasanremo25" },
+      { username: "Alessandra", password: "Fantasanremo25" }
     ];
 
     /**************************************************************
@@ -333,6 +355,7 @@
         localStorage.setItem("sessionExpiry", expiry);
         startSessionTimer(SESSION_DURATION);
 
+        // Render + Dati
         await renderCharacters();
         await renderResults();
       } else {
@@ -343,17 +366,20 @@
     /**************************************************************
      * 6) GESTIONE DATI UTENTE SU FIRESTORE                       *
      **************************************************************/
-    // /usersVotes/currentUser => { votesArray: [ { name, image, votes: {...}, locked: false }, ... ] }
 
+    // Ogni utente ha un doc in Firestore: /usersVotes/currentUser
+    // con structure: { votesArray: [ { name, image, votes: {...} }, ... ] }
+
+    // Inizializza i dati di un utente
     function initNewUserVotes() {
       return characters.map(name => ({
         name,
         image: "https://picsum.photos/seed/" + name.replace(/\s+/g, "") + "/100",
-        votes: { Canzone: 0, Esibizione: 0, Outfit: 0 },
-      
+        votes: { Canzone: 0, Esibizione: 0, Outfit: 0 }
       }));
     }
 
+    // Ritorna l'array con i voti dell'utente corrente
     async function getCurrentUserVotes() {
       if (!currentUser) return [];
       const docRef = db.collection("usersVotes").doc(currentUser);
@@ -361,19 +387,22 @@
       if (snap.exists) {
         return snap.data().votesArray;
       } else {
-        // Se non esiste, lo creiamo
+        // Creiamo un doc se non esiste
         const newArray = initNewUserVotes();
         await docRef.set({ votesArray: newArray });
         return newArray;
       }
     }
 
+    // Salva i voti dell'utente corrente
     async function saveCurrentUserVotes(votesArray) {
       if (!currentUser) return;
-      await db.collection("usersVotes").doc(currentUser).set({ votesArray });
+      await db.collection("usersVotes").doc(currentUser).set({
+        votesArray
+      });
     }
 
-    // Aggiorna un singolo voto
+    // Update di un singolo voto
     async function updateVote(charName, category, value) {
       const numericValue = Math.max(0, Math.min(10, parseInt(value) || 0));
 
@@ -381,9 +410,8 @@
       const idx = votesArray.findIndex(c => c.name === charName);
       if (idx >= 0) {
         votesArray[idx].votes[category] = numericValue;
-        // Salviamo su Firestore
         await saveCurrentUserVotes(votesArray);
-        renderResults(); 
+        renderResults(); // Ricalcoliamo i risultati globali
       }
     }
 
@@ -396,8 +424,7 @@
 
       const votesArray = await getCurrentUserVotes();
 
-      
-
+      votesArray.forEach(character => {
         const div = document.createElement("div");
         div.className = "character";
         div.innerHTML = `
@@ -407,11 +434,10 @@
             <div class="votes">
               ${categories.map(cat => `
                 <label>${cat}:</label>
-                <input type="number"
+                <input type="number" 
                        min="0" max="10"
-                       value="${character.votes[cat]}"
-                       ${inputsDisabled}
-                       onchange="updateVote('${character.name}', '${cat}', this.value)" />
+                       value="${character.votes[cat]}" 
+                       onchange="updateVote('${character.name}', '${cat}', this.value)"/>
               `).join("")}
             </div>
           </div>
@@ -487,11 +513,14 @@
     /**************************************************************
      * 9) REALTIME (OPZIONALE)                                    *
      **************************************************************/
+    // Se vuoi aggiornare i risultati in tempo reale (anche su altri device),
+    // rimuovi i commenti:
     /*
     db.collection("usersVotes").onSnapshot(() => {
       // Ricarichiamo la tabella globale
       renderResults();
       // Se vuoi aggiornare anche i voti dell'utente in corso
+      // (es. per riflettere cambi da altri dispositivi):
       if (currentUser) renderCharacters();
     });
     */
