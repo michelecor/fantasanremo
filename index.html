@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -161,7 +162,8 @@
       border-radius: 10px;
       overflow: hidden;
     }
-    .results th, .results td {
+    .results th,
+    .results td {
       padding: 15px;
       text-align: center;
       border-bottom: 1px solid #ddd;
@@ -187,7 +189,8 @@
       header h1 {
         font-size: 2em;
       }
-      .results th, .results td {
+      .results th,
+      .results td {
         font-size: 0.9em;
       }
     }
@@ -220,9 +223,8 @@
 
   <div id="characters" style="display: none;"></div>
 
-  <!-- Risultati con tabella in ordine alfabetico, eliminando la tabella decrescente -->
   <div class="results" style="display: none;">
-    <h2>Elenco artisti in ordine alfabetico</h2>
+    <h2>Elenco artisti (sommatoria voti di tutti gli utenti, ordine alfabetico)</h2>
     <table>
       <thead>
         <tr>
@@ -234,13 +236,13 @@
         </tr>
       </thead>
       <tbody id="resultsTableBody">
-        <!-- Results will be dynamically loaded here -->
+        <!-- Risultati sommati di tutti gli utenti -->
       </tbody>
     </table>
   </div>
 
   <script>
-    // Elenco utenti
+    // Array di utenti
     const users = [
       { username: "Michele_I", password: "Fantasanremo25" },
       { username: "Michele_C", password: "Fantasanremo25" },
@@ -272,9 +274,16 @@
 
     let currentUser = null;
 
-    // Per gestire i voti di ciascun utente, usiamo un oggetto in localStorage con i voti associati all'username
+    // Per gestire i voti di ciascun utente, usiamo un oggetto in localStorage con i voti associati all'username.
+    // userVotes = {
+    //   "Michele_I": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
+    //   "Michele_C": [...],
+    //   ...
+    // }
 
-    // Personaggi
+    let userVotes = {};
+
+    // Lista artisti
     const characters = [
       "Achille Lauro", "Bresh", "Brunori SAS", "Clara", "Coma_Cose",
       "Elodie", "Emis Killa", "Fedez", "Francesca Michielin", "Francesco Gabbani",
@@ -284,21 +293,16 @@
       "Shablo ft. Guè, Joshua e Tormento", "Simone Cristicchi", "The Kolors", "Tony Effe", "Willie Peyote"
     ].sort();
 
-    // Categorie
+    // Categorie di voto
     const categories = ["Canzone", "Esibizione", "Outfit"];
 
-    // Oggetto che conterrà i voti per ciascun utente
-    let usersVotes = {};
-
-    // Quando effettuiamo il login, carichiamo i voti di quell'utente da localStorage
+    // Funzione di login
     function login() {
       const username = document.getElementById("username").value;
       const password = document.getElementById("password").value;
       const errorMessage = document.getElementById("errorMessage");
 
-      const user = users.find(
-        u => u.username === username && u.password === password
-      );
+      const user = users.find(u => u.username === username && u.password === password);
 
       if (user) {
         currentUser = username;
@@ -307,9 +311,9 @@
         document.querySelector(".results").style.display = "block";
 
         loadAllUsersVotes();
-        if (!usersVotes[currentUser]) {
-          // Se l'utente non ha ancora voti, inizializziamo
-          usersVotes[currentUser] = characters.map(name => ({
+        if (!userVotes[currentUser]) {
+          // Inizializziamo se non esiste
+          userVotes[currentUser] = characters.map(name => ({
             name,
             image: "https://picsum.photos/seed/" + name.replace(/\s+/g, "") + "/100",
             votes: {
@@ -327,37 +331,31 @@
       }
     }
 
-    // Carichiamo da localStorage l'oggetto con i voti di tutti gli utenti
+    // Carica i voti di tutti gli utenti da localStorage
     function loadAllUsersVotes() {
-      const saved = localStorage.getItem("usersVotes");
+      const saved = localStorage.getItem("fantasanremoAllVotes");
       if (saved) {
-        usersVotes = JSON.parse(saved);
+        userVotes = JSON.parse(saved);
       } else {
-        usersVotes = {};
+        userVotes = {};
       }
     }
 
-    // Salviamo in localStorage l'oggetto con i voti di tutti gli utenti
+    // Salva tutti i voti su localStorage
     function saveAllUsersVotes() {
-      localStorage.setItem("usersVotes", JSON.stringify(usersVotes));
+      localStorage.setItem("fantasanremoAllVotes", JSON.stringify(userVotes));
     }
 
-    // Ritorna la lista voti dell'utente attuale
-    function getCurrentUserData() {
-      return usersVotes[currentUser] || [];
-    }
-
-    // Restituisce l'indice di un dato personaggio
-    function findCharacterIndexByName(name) {
-      const userData = getCurrentUserData();
-      return userData.findIndex(c => c.name === name);
+    // Restituisce la lista di personaggi dell'utente corrente
+    function getCurrentUserCharacters() {
+      return userVotes[currentUser] || [];
     }
 
     function renderCharacters() {
       const characterContainer = document.getElementById("characters");
       characterContainer.innerHTML = "";
-      const userData = getCurrentUserData();
 
+      const userData = getCurrentUserCharacters();
       userData.forEach((character, index) => {
         const characterDiv = document.createElement("div");
         characterDiv.className = "character";
@@ -366,17 +364,13 @@
           <div>
             <h3>${character.name}</h3>
             <div class="votes">
-              ${categories
-                .map(
-                  category => `
-                  <label for="vote-${index}-${category}">${category}:</label>
-                  <input type="number" id="vote-${index}-${category}" 
-                         aria-label="Vote for ${character.name}'s ${category}" 
-                         min="0" max="10" value="${character.votes[category]}" 
-                         onchange="updateVote('${character.name}', '${category}', this.value)" />
-                `
-                )
-                .join("")}
+              ${categories.map(cat => `
+                <label>${cat}:</label>
+                <input type="number" 
+                       min="0" max="10" 
+                       value="${character.votes[cat]}" 
+                       onchange="updateVote('${character.name}', '${cat}', this.value)"/>
+              `).join("")}
             </div>
           </div>
         `;
@@ -384,40 +378,69 @@
       });
     }
 
-    // Quando aggiorniamo i voti, salviamo su localStorage e aggiorniamo la tabella
-    function updateVote(characterName, category, value) {
+    // Aggiorna il voto dell'utente corrente
+    function updateVote(charName, category, value) {
       const numericValue = Math.max(0, Math.min(10, parseInt(value) || 0));
-      const userData = getCurrentUserData();
-      const idx = userData.findIndex(c => c.name === characterName);
-      if (idx !== -1) {
+
+      const userData = getCurrentUserCharacters();
+      const idx = userData.findIndex(c => c.name === charName);
+      if (idx >= 0) {
         userData[idx].votes[category] = numericValue;
-        usersVotes[currentUser] = userData;
+        userVotes[currentUser] = userData;
         saveAllUsersVotes();
         renderResults();
       }
     }
 
-    // Renderizza la tabella in ordine alfabetico, in tempo reale
+    // Ottiene la somma dei voti di tutti gli utenti per ogni artista
+    function getGlobalSumData() {
+      // Creiamo una mappa: artistName -> {name, image, votes: {Canzone, ...}}
+      const aggregator = {};
+
+      // Per ogni utente
+      for (const userKey in userVotes) {
+        const userData = userVotes[userKey];
+        // userData: [ {name, image, votes: {Canzone, ...}}, ... ]
+        userData.forEach(artist => {
+          if (!aggregator[artist.name]) {
+            aggregator[artist.name] = {
+              name: artist.name,
+              image: artist.image,
+              votes: {
+                Canzone: 0,
+                Esibizione: 0,
+                Outfit: 0
+              }
+            };
+          }
+          // Sommiamo i voti
+          categories.forEach(cat => {
+            aggregator[artist.name].votes[cat] += artist.votes[cat];
+          });
+        });
+      }
+
+      // Convertiamo aggregator in un array e ordiniamo alfabeticamente
+      const aggregatedArray = Object.values(aggregator);
+      aggregatedArray.sort((a, b) => a.name.localeCompare(b.name));
+      return aggregatedArray;
+    }
+
+    // Renderizza la tabella con la somma di tutti i voti
     function renderResults() {
       const resultsTableBody = document.getElementById("resultsTableBody");
       resultsTableBody.innerHTML = "";
-      const userData = getCurrentUserData();
 
-      // Ordiniamo alfabeticamente per nome
-      const alphabetical = [...userData].sort((a, b) => a.name.localeCompare(b.name));
-
-      alphabetical.forEach(character => {
-        const totalVotes = categories.reduce(
-          (sum, cat) => sum + character.votes[cat],
-          0
-        );
+      const globalData = getGlobalSumData();
+      globalData.forEach(artist => {
+        const total = categories.reduce((sum, cat) => sum + artist.votes[cat], 0);
         const row = document.createElement("tr");
         row.innerHTML = `
-          <td>${character.name}</td>
-          <td>${character.votes.Canzone}</td>
-          <td>${character.votes.Esibizione}</td>
-          <td>${character.votes.Outfit}</td>
-          <td>${totalVotes}</td>
+          <td>${artist.name}</td>
+          <td>${artist.votes.Canzone}</td>
+          <td>${artist.votes.Esibizione}</td>
+          <td>${artist.votes.Outfit}</td>
+          <td>${total}</td>
         `;
         resultsTableBody.appendChild(row);
       });
@@ -432,7 +455,9 @@
     }
 
     // Salviamo quando si chiude la pagina
-    window.addEventListener("beforeunload", saveAllUsersVotes);
+    window.addEventListener("beforeunload", () => {
+      saveAllUsersVotes();
+    });
   </script>
 </body>
 </html>
