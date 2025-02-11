@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Character Voting App - Fantasanremo + Firestore</title>
+  <title>Character Voting App - Fantasanremo Style</title>
   <style>
     body {
       font-family: "Poppins", sans-serif;
@@ -194,7 +195,8 @@
       }
     }
   </style>
-  <!-- Carichiamo Firebase (Compat libraries per semplicità) -->
+
+ <!-- Carichiamo Firebase (Compat libraries per semplicità) -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 </head>
@@ -222,7 +224,7 @@
   <div id="characters" style="display: none;"></div>
 
   <div class="results" style="display: none;">
-    <h2>Elenco artisti (sommatoria voti di tutti gli utenti, ordine alfabetico)</h2>
+    <h2>Elenco artisti </h2>
     <table>
       <thead>
         <tr>
@@ -240,12 +242,8 @@
   </div>
 
   <script>
-    /************************************
-     *     1) CONFIGURAZIONE FIREBASE   *
-     ************************************/
-    // Sostituisci con le TUE credenziali da
-    // Impostazioni Progetto → App Web
-    const firebaseConfig = {
+
+   const firebaseConfig = {
       apiKey: "AIzaSyC064Avv3hq01r04UUeJmksDubmEghcyd8",
       authDomain: "fantasanremo-e87e8.firebaseapp.com",
       projectId: "fantasanremo-e87e8",
@@ -257,23 +255,75 @@
     // Inizializziamo Firebase e Firestore
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+    // Timer di sessione: 1 ora
+    const SESSION_DURATION = 3600000; // 1 ora in millisecondi
 
-    // SESSION DURATION (1 ora)
-    const SESSION_DURATION = 3600000;
-
-    // Users + Password
+    // Array di utenti
     const users = [
       { username: "Michele_I", password: "Fantasanremo25" },
       { username: "Michele_C", password: "Fantasanremo25" },
-      // ... Aggiungi gli altri
+      { username: "Angelo_R", password: "Fantasanremo25" },
+      { username: "Michele_M", password: "Fantasanremo25" },
+      { username: "Chieppo", password: "Fantasanremo25" },
+      { username: "Pakistano", password: "Fantasanremo25" },
+      { username: "Luigi_O", password: "Fantasanremo25" },
+      { username: "Carmine", password: "Fantasanremo25" },
+      { username: "Gennaro", password: "Fantasanremo25" },
+      { username: "Fabrizio", password: "Fantasanremo25" },
+      { username: "Alessandro", password: "Fantasanremo25" },
+      { username: "Marco_B", password: "Fantasanremo25" },
+      { username: "Marco_S", password: "Fantasanremo25" },
+      { username: "Leo", password: "Fantasanremo25" },
+      { username: "Giovanni", password: "Fantasanremo25" },
+      { username: "Gianluca", password: "Fantasanremo25" },
+      { username: "Diomede", password: "Fantasanremo25" },
+      { username: "Angelo_F", password: "Fantasanremo25" },
+      { username: "Dario", password: "Fantasanremo25" },
+      { username: "Emy", password: "Fantasanremo25" },
+      { username: "Anita", password: "Fantasanremo25" },
+      { username: "Miriana", password: "Fantasanremo25" },
+      { username: "Giorgia", password: "Fantasanremo25" },
+      { username: "Flavia", password: "Fantasanremo25" },
+      { username: "Giusy", password: "Fantasanremo25" },
+      { username: "Alessandra", password: "Fantasanremo25" }
     ];
 
     let currentUser = null;
     let sessionTimer = null;
 
-    /************************************
-     * 2) ARTISTI E CATEGORIE           *
-     ************************************/
+    // Per gestire i voti di ciascun utente, usiamo un oggetto in localStorage con i voti associati all'username.
+     userVotes = {
+     "Michele_I": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
+      "Michele_C": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
+    "Michele_M": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
+      "Angelo_R": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
+       "Angelo_F": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
+      "Chieppo": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
+       "Pakistano": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
+      "Luigi_O": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
+       "Fabrizio": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
+      "Gennaro": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
+       "Carmine": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
+      "Marco_B": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
+       "Marco_S": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
+      "Diomede": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
+       "Leo": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
+      "Anita": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
+       "Dario": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
+      "Emy": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
+       "Giovanni": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
+      "Giorgia": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
+       "Miriana": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
+      "Flavia": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
+       "Giusy": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
+      "Gianluca": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
+       "Alessandro": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
+      "Alessandra": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
+    // }
+
+    let userVotes = {};
+
+    // Lista artisti
     const characters = [
       "Achille Lauro", "Bresh", "Brunori SAS", "Clara", "Coma_Cose",
       "Elodie", "Emis Killa", "Fedez", "Francesca Michielin", "Francesco Gabbani",
@@ -283,32 +333,35 @@
       "Shablo ft. Guè, Joshua e Tormento", "Simone Cristicchi", "The Kolors", "Tony Effe", "Willie Peyote"
     ].sort();
 
+    // Categorie di voto
     const categories = ["Canzone", "Esibizione", "Outfit"];
 
-    /*******************************************
-     * 3) VERIFICA SESSIONE SALVATA + TIMER    *
-     *******************************************/
-    document.addEventListener("DOMContentLoaded", async () => {
-      // Se l'ora scorsa non è scaduta, saltiamo login
+    // Al caricamento pagina, controlliamo se c'è una session valida
+    window.addEventListener("DOMContentLoaded", () => {
+      loadAllUsersVotes();
+      // Controlliamo se esiste una session in localStorage
       const storedUser = localStorage.getItem("currentSessionUser");
       const sessionExpiry = localStorage.getItem("sessionExpiry");
 
       if (storedUser && sessionExpiry) {
         const now = Date.now();
         if (now < parseInt(sessionExpiry)) {
-          // Sessione ancora valida
+          // La sessione è ancora valida
           currentUser = storedUser;
           document.getElementById("loginContainer").style.display = "none";
           document.getElementById("characters").style.display = "block";
           document.querySelector(".results").style.display = "block";
 
+          // Avviamo il timer di logout
           startSessionTimer(parseInt(sessionExpiry) - now);
+          // Se l'utente non ha dati, inizializziamo
+          if (!userVotes[currentUser]) {
+            userVotes[currentUser] = initUserData();
+          }
 
-          // Nessun salvataggio locale di user data
-          // Scarichiamo semplicemente i dati e li mostriamo
-          await renderCharacters();
-          await renderResults();
-          return;
+          renderCharacters();
+          renderResults();
+          return; // Evitiamo di mostrare la login
         } else {
           // Session scaduta
           localStorage.removeItem("currentSessionUser");
@@ -317,39 +370,65 @@
       }
     });
 
-    /*******************************************
-     * 4) LOGIN                                *
-     *******************************************/
-    async function login() {
+    // Funzione di login
+    function login() {
       const username = document.getElementById("username").value;
       const password = document.getElementById("password").value;
       const errorMessage = document.getElementById("errorMessage");
 
-      const user = users.find(u => u.username === username && u.password === password);
+      const user = users.find(
+        u => u.username === username && u.password === password
+      );
+
       if (user) {
         currentUser = username;
         document.getElementById("loginContainer").style.display = "none";
         document.getElementById("characters").style.display = "block";
         document.querySelector(".results").style.display = "block";
 
-        // Impostiamo la session di 1 ora
+        // Avviamo la session di 1 ora
         const expiry = Date.now() + SESSION_DURATION;
         localStorage.setItem("currentSessionUser", currentUser);
         localStorage.setItem("sessionExpiry", expiry);
         startSessionTimer(SESSION_DURATION);
 
-        // Carichiamo e rendiamo
-        await renderCharacters();
-        await renderResults();
+        loadAllUsersVotes();
+        if (!userVotes[currentUser]) {
+          userVotes[currentUser] = initUserData();
+        }
+        renderCharacters();
+        renderResults();
+        saveAllUsersVotes();
       } else {
         errorMessage.innerHTML = "Incorrect username or password.";
       }
     }
 
-    /*******************************************
-     * 5) FUNZIONI PER VOTI                   *
-     *******************************************/
-    // 5a) Ottiene l'array di voti per l'utente corrente
+    // Inizializza i dati di un utente
+    function initUserData() {
+      return characters.map(name => ({
+        name,
+        image: "https://picsum.photos/seed/" + name.replace(/\s+/g, "") + "/100",
+        votes: {
+          Canzone: 0,
+          Esibizione: 0,
+          Outfit: 0
+        }
+      }));
+    }
+
+    // Timer di sessione, effettua logout dopo timeMs
+    function startSessionTimer(timeMs) {
+      if (sessionTimer) {
+        clearTimeout(sessionTimer);
+      }
+      sessionTimer = setTimeout(() => {
+        alert("Session expired. Logging out...");
+        logout();
+      }, timeMs);
+    }
+
+  / 5a) Ottiene l'array di voti per l'utente corrente
     async function getCurrentUserVotes() {
       if (!currentUser) return [];
       const docRef = db.collection("usersVotes").doc(currentUser);
