@@ -1,280 +1,503 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Character Voting App - Fantasanremo Style</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(to bottom, #FFD400, #001F54);
-            color: #000000;
-            margin: 0;
-            padding: 0;
-        }
-        header {
-            background-color: #001F54;
-            color: white;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        header h1 {
-            margin: 0;
-            font-size: 2.5em;
-        }
-        /* New Login Styles */
-        .login-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: rgba(0, 0, 0, 0.5);
-        }
-        .login-box {
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            width: 300px;
-        }
-        .login-box h2 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .login-box label {
-            display: block;
-            margin-bottom: 5px;
-            color: #001F54;
-        }
-        .login-box input {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #001F54;
-            border-radius: 5px;
-        }
-        .login-box button {
-            width: 100%;
-            padding: 10px;
-            background-color: #001F54;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .login-box button:hover {
-            background-color: #002F7A;
-        }
-        .error {
-            color: red;
-            text-align: center;
-        }
-        /* Existing styles */
-        .character {
-            border: 2px solid #FFD400;
-            border-radius: 10px;
-            padding: 20px;
-            margin: 15px;
-            background-color: #F2F2F2;
-            box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.2);
-            display: flex;
-            align-items: center;
-        }
-        /* ...rest of the existing CSS... */
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Character Voting App - Fantasanremo Style</title>
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(to bottom, #ffd400, #001f54);
+      color: #ffffff;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px;
+      background-color: #001f54;
+      color: white;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2.5em;
+      font-weight: 700;
+      text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      margin: 0 15px;
+      font-weight: 600;
+      font-size: 1.1em;
+      transition: color 0.3s ease;
+    }
+    nav a:hover {
+      color: #ffd400;
+    }
+    .login-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: linear-gradient(to bottom right, #001f54, #ffd400);
+    }
+    .login-box {
+      background: linear-gradient(to bottom, #ffffff, #f0f0f0);
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      width: 350px;
+      text-align: center;
+      color: #001f54;
+    }
+    .login-box h2 {
+      font-size: 2em;
+      margin-bottom: 20px;
+      color: #ffd400;
+    }
+    .login-box label {
+      display: block;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+    .login-box input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 20px;
+      border: 1px solid #001f54;
+      border-radius: 8px;
+      font-size: 1em;
+      box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    .login-box input:focus {
+      border-color: #ffd400;
+      outline: none;
+    }
+    .login-box button {
+      width: 100%;
+      padding: 12px;
+      background-color: #001f54;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.2em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+    .login-box button:hover {
+      background-color: #ffd400;
+      color: #001f54;
+      transform: scale(1.05);
+    }
+    .error {
+      color: red;
+      font-size: 0.9em;
+      margin-bottom: 10px;
+    }
+    #characters {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      padding: 40px 20px;
+      background: linear-gradient(to bottom, rgba(255, 212, 0, 0.8), rgba(0, 31, 84, 0.9));
+      color: white;
+    }
+    .character {
+      border: 2px solid #ffd400;
+      border-radius: 10px;
+      padding: 20px;
+      background-color: #ffffff;
+      color: #001f54;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      text-align: center;
+    }
+    .character img {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 10px;
+    }
+    .character h3 {
+      margin: 10px 0;
+      font-size: 1.5em;
+    }
+    .votes label {
+      font-weight: 600;
+      margin-top: 10px;
+    }
+    .votes input {
+      width: 50px;
+      padding: 5px;
+      margin: 10px 0;
+      border: 1px solid #001f54;
+      border-radius: 5px;
+      text-align: center;
+    }
+    .results {
+      padding: 40px 20px;
+      background-color: #f7f9fc;
+    }
+    .results h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 2em;
+      color: #001f54;
+    }
+    .results table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      background-color: #ffffff;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .results th, .results td {
+      padding: 15px;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+      font-size: 1.1em;
+    }
+    .results th {
+      background-color: #001f54;
+      color: white;
+      text-transform: uppercase;
+      font-size: 1em;
+      letter-spacing: 1px;
+    }
+    .results td {
+      color: #333;
+    }
+    .results tr:hover {
+      background-color: #f1f1f1;
+    }
+    /* Tabella riepilogo in ordine alfabetico */
+    .summary-table {
+      margin-top: 40px;
+    }
+    .summary-table h2 {
+      text-align: center;
+      font-size: 1.5em;
+      color: #001f54;
+    }
+    .summary-table table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0 auto;
+      background-color: #ffffff;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .summary-table th,
+    .summary-table td {
+      padding: 15px;
+      text-align: center;
+      border-bottom: 1px solid #ddd;
+      font-size: 1.1em;
+    }
+    .summary-table th {
+      background-color: #001f54;
+      color: #fff;
+      text-transform: uppercase;
+      font-size: 1em;
+      letter-spacing: 1px;
+    }
+    .summary-table td {
+      color: #333;
+    }
+    .summary-table tr:hover {
+      background-color: #f1f1f1;
+    }
+    @media (max-width: 768px) {
+      #characters {
+        grid-template-columns: 1fr;
+      }
+      header h1 {
+        font-size: 2em;
+      }
+      .results th,
+      .results td,
+      .summary-table th,
+      .summary-table td {
+        font-size: 0.9em;
+      }
+    }
+  </style>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap"
+    rel="stylesheet"
+  />
 </head>
 <body>
-    <header>
-        <h1>Fantasanremo Voting App</h1>
-    </header>
+  <header>
+    <h1>Fantasanremo Voting App</h1>
+    <nav>
+      <a href="#characters">Vote</a>
+      <a href="#results">Results</a>
+    </nav>
+  </header>
 
-    <div class="login-container" id="loginContainer">
-        <div class="login-box">
-            <h2>Login</h2>
-            <div class="error" id="errorMessage"></div>
-            <label for="username">Username</label>
-            <input type="text" id="username" placeholder="Enter Username">
-            <label for="password">Password</label>
-            <input type="password" id="password" placeholder="Enter Password">
-            <button onclick="login()">Login</button>
-        </div>
+  <div class="login-container" id="loginContainer">
+    <div class="login-box">
+      <h2>Login</h2>
+      <div class="error" id="errorMessage"></div>
+      <label for="username">Username</label>
+      <input type="text" id="username" placeholder="Enter Username" />
+      <label for="password">Password</label>
+      <input type="password" id="password" placeholder="Enter Password" />
+      <button onclick="login()">Login</button>
     </div>
+  </div>
 
-    <div id="characters" style="display: none;">
-        <!-- Characters will be dynamically loaded here -->
+  <div id="characters" style="display: none;"></div>
+
+  <div class="results" style="display: none;">
+    <h2>Results</h2>
+    <!-- Tabella con i risultati (ordinati per voto decrescente) -->
+    <table>
+      <thead>
+        <tr>
+          <th>Artist</th>
+          <th>Canzone</th>
+          <th>Esibizione</th>
+          <th>Outfit</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody id="resultsTableBody"></tbody>
+    </table>
+
+    <!-- Tabella riepilogativa con artisti in ordine alfabetico -->
+    <div class="summary-table">
+      <h2>Elenco artisti in ordine alfabetico</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Artist</th>
+            <th>Canzone</th>
+            <th>Esibizione</th>
+            <th>Outfit</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody id="summaryTableBody"></tbody>
+      </table>
     </div>
+  </div>
 
-    <div class="results" style="display: none;">
-        <h2>Results</h2>
-        <div id="results">
-            <!-- Results will be displayed here -->
-        </div>
-    </div>
+  <script>
+    // Array di utenti autorizzati
+    const users = [
+      { username: "Michele_I", password: "Fantasanremo25" },
+      { username: "Michele_C", password: "Fantasanremo25" },
+      { username: "Angelo_R", password: "Fantasanremo25" },
+      { username: "Michele_M", password: "Fantasanremo25" },
+      { username: "Chieppo", password: "Fantasanremo25" },
+      { username: "Pakistano", password: "Fantasanremo25" },
+      { username: "Luigi_O", password: "Fantasanremo25" },
+      { username: "Carmine", password: "Fantasanremo25" },
+      { username: "Gennaro", password: "Fantasanremo25" },
+      { username: "Fabrizio", password: "Fantasanremo25" },
+      { username: "Alessandro", password: "Fantasanremo25" },
+      { username: "Marco_B", password: "Fantasanremo25" },
+      { username: "Marco_S", password: "Fantasanremo25" },
+      { username: "Leo", password: "Fantasanremo25" },
+      { username: "Giovanni", password: "Fantasanremo25" },
+      { username: "Gianluca", password: "Fantasanremo25" },
+      { username: "Diomede", password: "Fantasanremo25" },
+      { username: "Angelo_F", password: "Fantasanremo25" },
+      { username: "Dario", password: "Fantasanremo25" },
+      { username: "Emy", password: "Fantasanremo25" },
+      { username: "Anita", password: "Fantasanremo25" },
+      { username: "Miriana", password: "Fantasanremo25" },
+      { username: "Giorgia", password: "Fantasanremo25" },
+      { username: "Flavia", password: "Fantasanremo25" },
+      { username: "Giusy", password: "Fantasanremo25" },
+      { username: "Alessandra", password: "Fantasanremo25" }
+    ];
 
-    <footer>
-        <p>&copy; 2025 Fantasanremo Voting App. All rights reserved.</p>
-    </footer>
+    // Utente attualmente loggato
+    let currentUser = null;
 
-    <script>
-        // Array of users with their usernames and passwords
-        const users = [
-    { username: "Michele_I", password: "Fantasanremo25" },
-    { username: "Michele_C", password: "Fantasanremo25" },
-    { username: "Angelo_R", password: "Fantasanremo25" },
-    { username: "Michele_M", password: "Fantasanremo25" },
-    { username: "Chieppo", password: "Fantasanremo25" },
-    { username: "Pakistano", password: "Fantasanremo25" },
-    { username: "Luigi_O", password: "Fantasanremo25" },
-    { username: "Carmine", password: "Fantasanremo25" },
-    { username: "Gennaro", password: "Fantasanremo25" },
-    { username: "Fabrizio", password: "Fantasanremo25" },
-    { username: "Alessandro", password: "Fantasanremo25" },
-    { username: "Marco_B", password: "Fantasanremo25" },
-    { username: "Marco_S", password: "Fantasanremo25" },
-    { username: "Leo", password: "Fantasanremo25" },
-    { username: "Giovanni", password: "Fantasanremo25" },
-    { username: "Gianluca", password: "Fantasanremo25" },
-    { username: "Diomede", password: "Fantasanremo25" },
-    { username: "Angelo_F", password: "Fantasanremo25" },
-    { username: "Dario", password: "Fantasanremo25" },
-    { username: "Emy", password: "Fantasanremo25" },
-    { username: "Anita", password: "Fantasanremo25" },
-    { username: "Miriana", password: "Fantasanremo25" },
-    { username: "Giorgia", password: "Fantasanremo25" },
-    { username: "Flavia", password: "Fantasanremo25" },
-    { username: "Giusy", password: "Fantasanremo25" },
-    { username: "Alessandra", password: "Fantasanremo25" }
-];
+    // Funzione di login
+    function login() {
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+      const errorMessage = document.getElementById("errorMessage");
 
-        let currentUser = null;
+      // Verifica se username e password sono corretti
+      const user = users.find(u => u.username === username && u.password === password);
 
-        function login() {
-            const username = document.getElementById("username").value;
-            const password = document.getElementById("password").value;
-            const errorMessage = document.getElementById("errorMessage");
+      if (user) {
+        currentUser = user;
+        document.getElementById("loginContainer").style.display = "none";
+        document.getElementById("characters").style.display = "block";
+        document.querySelector(".results").style.display = "block";
 
-            // Check if the username and password match any user
-            const user = users.find(u => u.username === username && u.password === password);
+        // Carica eventuali dati salvati
+        loadFromLocalStorage();
 
-            if (user) {
-                // Store the logged in user and hide the login form
-                currentUser = user;
-                document.getElementById("loginContainer").style.display = "none";
-                document.getElementById("characters").style.display = "block";
-                document.querySelector(".results").style.display = "block";
-                loadFromLocalStorage();
-                renderCharacters();
-                renderResults();
-            } else {
-                // Show error message if login fails
-                errorMessage.innerHTML = "Incorrect username or password.";
-            }
-        }
+        // Renderizza personaggi e risultati
+        renderCharacters();
+        renderResults();
+      } else {
+        errorMessage.innerHTML = "Incorrect username or password.";
+      }
+    }
 
-        // List of characters and voting logic (unchanged)
-        const characters = [
-            "Achille Lauro", "Bresh", "Brunori SAS", "Clara", "Coma_Cose",
-            "Elodie", "Emis Killa", "Fedez", "Francesca Michielin", "Francesco Gabbani",
-            "Gaia", "Giorgia", "Irama", "Joan Thiele", "Lucio Corsi",
-            "Marcella Bella", "Massimo Ranieri", "Modà", "Noemi", "Olly",
-            "Rkomi", "Rocco Hunt", "Rose Villain", "Sarah Toscano", "Serena Brancale",
-            "Shablo ft. Guè, Joshua e Tormento", "Simone Cristicchi", "The Kolors", "Tony Effe", "Willie Peyote"
-        ].sort();
+    // Dati degli artisti
+    const characters = [
+      "Achille Lauro", "Bresh", "Brunori SAS", "Clara", "Coma_Cose",
+      "Elodie", "Emis Killa", "Fedez", "Francesca Michielin", "Francesco Gabbani",
+      "Gaia", "Giorgia", "Irama", "Joan Thiele", "Lucio Corsi",
+      "Marcella Bella", "Massimo Ranieri", "Modà", "Noemi", "Olly",
+      "Rkomi", "Rocco Hunt", "Rose Villain", "Sarah Toscano", "Serena Brancale",
+      "Shablo ft. Guè, Joshua e Tormento", "Simone Cristicchi", "The Kolors", "Tony Effe", "Willie Peyote"
+    ].sort(); // Ordiniamo alfabeticamente i nomi
 
-        const categories = ["Canzone", "Esibizione", "Outfit"];
-        let characterData = characters.map(name => ({
-            name,
-            image: "https://picsum.photos/seed/" + name.replace(/\s+/g, "") + "/100",
-            votes: { Canzone: 0, Esibizione: 0, Outfit: 0 }
-        }));
+    // Categorie di voto
+    const categories = ["Canzone", "Esibizione", "Outfit"];
 
-        function renderCharacters() {
-            const characterContainer = document.getElementById("characters");
-            characterContainer.innerHTML = "";
+    // Inizializziamo i dati di ogni artista
+    let characterData = characters.map(name => ({
+      name,
+      // Per le immagini di esempio usiamo un placeholder generico
+      image: "https://picsum.photos/seed/" + name.replace(/\s+/g, "") + "/100",
+      votes: {
+        Canzone: 0,
+        Esibizione: 0,
+        Outfit: 0
+      }
+    }));
 
-            characterData.forEach((character, index) => {
-                const characterDiv = document.createElement("div");
-                characterDiv.className = "character";
-                characterDiv.innerHTML = `
-                    <img src="${character.image}" alt="${character.name}">
-                    <div>
-                        <h3>${character.name}</h3>
-                        <div class="votes">
-                            ${categories
-                                .map(
-                                    (category) => `
-                                    <label for="vote-${index}-${category}">${category}:</label>
-                                    <input type="number" id="vote-${index}-${category}" 
-                                           aria-label="Vote for ${character.name}'s ${category}" 
-                                           min="0" max="10" value="${character.votes[category]}" 
-                                           onchange="updateVote(${index}, '${category}', this.value)" />
-                                `
-                                )
-                                .join("")}
-                        </div>
-                    </div>
-                `;
-                characterContainer.appendChild(characterDiv);
-            });
-        }
+    // Renderizza i riquadri dei personaggi
+    function renderCharacters() {
+      const characterContainer = document.getElementById("characters");
+      characterContainer.innerHTML = "";
 
-        function updateVote(index, category, value) {
-            const input = document.getElementById(`vote-${index}-${category}`);
-            const numericValue = Math.max(0, Math.min(10, parseInt(value) || 0));
+      characterData.forEach((character, index) => {
+        const characterDiv = document.createElement("div");
+        characterDiv.className = "character";
+        characterDiv.innerHTML = `
+          <img src="${character.image}" alt="${character.name}">
+          <div>
+            <h3>${character.name}</h3>
+            <div class="votes">
+              ${categories.map(category => `
+                  <label for="vote-${index}-${category}">${category}:</label>
+                  <input type="number" id="vote-${index}-${category}" 
+                         aria-label="Vote for ${character.name}'s ${category}" 
+                         min="0" max="10" value="${character.votes[category]}" 
+                         onchange="updateVote(${index}, '${category}', this.value)" />
+              `).join("")}
+            </div>
+          </div>
+        `;
+        characterContainer.appendChild(characterDiv);
+      });
+    }
 
-            if (value < 0 || value > 10) {
-                input.classList.add("invalid");
-            } else {
-                input.classList.remove("invalid");
-                characterData[index].votes[category] = numericValue;
-                saveToLocalStorage();
-                renderResults();
-            }
-        }
+    // Aggiorna il voto di un artista in una certa categoria
+    function updateVote(index, category, value) {
+      const input = document.getElementById(`vote-${index}-${category}`);
+      const numericValue = Math.max(0, Math.min(10, parseInt(value) || 0));
 
-        function renderResults() {
-            const resultsContainer = document.getElementById("results");
-            resultsContainer.innerHTML = "";
+      if (numericValue < 0 || numericValue > 10) {
+        input.classList.add("invalid");
+      } else {
+        input.classList.remove("invalid");
+        characterData[index].votes[category] = numericValue;
+        saveToLocalStorage();
+        renderResults();
+      }
+    }
 
-            characterData.sort((a, b) => {
-                const totalA = categories.reduce((sum, cat) => sum + a.votes[cat], 0);
-                const totalB = categories.reduce((sum, cat) => sum + b.votes[cat], 0);
-                return totalB - totalA;
-            });
+    // Renderizza i risultati in due tabelle:
+    // 1) Tabella principale, ordinata per punteggio decrescente
+    // 2) Tabella riepilogativa in ordine alfabetico
+    function renderResults() {
+      renderResultsByScore();
+      renderSummaryTable();
+    }
 
-            characterData.forEach((character) => {
-                const totalVotes = categories.reduce((sum, cat) => sum + character.votes[cat], 0);
-                const resultDiv = document.createElement("div");
-                resultDiv.innerHTML = `
-                    <h4>${character.name}</h4>
-                    <ul>
-                        ${categories
-                            .map(
-                                (category) => `
-                                <li>${category}: ${character.votes[category]}</li>
-                            `
-                            )
-                            .join("")}
-                    </ul>
-                    <p><strong>Total Votes: ${totalVotes}</strong></p>
-                `;
-                resultsContainer.appendChild(resultDiv);
-            });
-        }
+    // Tabella ordinata per punteggio decrescente
+    function renderResultsByScore() {
+      const resultsTableBody = document.getElementById("resultsTableBody");
+      // Svuotiamo la tabella
+      resultsTableBody.innerHTML = "";
 
-        function saveToLocalStorage() {
-            localStorage.setItem("characterVotes", JSON.stringify(characterData));
-        }
+      // Ordiniamo per punteggio totale decrescente
+      const sorted = [...characterData].sort((a, b) => {
+        const totalA = categories.reduce((sum, cat) => sum + a.votes[cat], 0);
+        const totalB = categories.reduce((sum, cat) => sum + b.votes[cat], 0);
+        return totalB - totalA; // decrescente
+      });
 
-        function loadFromLocalStorage() {
-            const savedData = localStorage.getItem("characterVotes");
-            if (savedData) {
-                characterData = JSON.parse(savedData);
-            }
-        }
+      // Creiamo le righe
+      sorted.forEach(character => {
+        const totalVotes = categories.reduce((sum, cat) => sum + character.votes[cat], 0);
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${character.name}</td>
+          <td>${character.votes.Canzone}</td>
+          <td>${character.votes.Esibizione}</td>
+          <td>${character.votes.Outfit}</td>
+          <td>${totalVotes}</td>
+        `;
+        resultsTableBody.appendChild(row);
+      });
+    }
 
-        window.addEventListener("beforeunload", saveToLocalStorage);
-    </script>
+    // Tabella riepilogativa in ordine alfabetico
+    function renderSummaryTable() {
+      const summaryTableBody = document.getElementById("summaryTableBody");
+      if (!summaryTableBody) return; // In caso la sezione non esista
+
+      // Svuotiamo la tabella
+      summaryTableBody.innerHTML = "";
+
+      // Ordiniamo alfabeticamente per nome
+      const alphabetical = [...characterData].sort((a, b) => a.name.localeCompare(b.name));
+
+      alphabetical.forEach(character => {
+        const totalVotes = categories.reduce((sum, cat) => sum + character.votes[cat], 0);
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${character.name}</td>
+          <td>${character.votes.Canzone}</td>
+          <td>${character.votes.Esibizione}</td>
+          <td>${character.votes.Outfit}</td>
+          <td>${totalVotes}</td>
+        `;
+        summaryTableBody.appendChild(row);
+      });
+    }
+
+    // Salvataggio su localStorage
+    function saveToLocalStorage() {
+      localStorage.setItem("characterVotes", JSON.stringify(characterData));
+    }
+
+    // Caricamento da localStorage
+    function loadFromLocalStorage() {
+      const savedData = localStorage.getItem("characterVotes");
+      if (savedData) {
+        characterData = JSON.parse(savedData);
+      }
+    }
+
+    // Salva i dati prima di lasciare la pagina
+    window.addEventListener("beforeunload", saveToLocalStorage);
+  </script>
 </body>
 </html>
