@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Character Voting App - Fantasanremo Style</title>
@@ -196,7 +195,7 @@
     }
   </style>
 
- <!-- Carichiamo Firebase (Compat libraries per semplicità) -->
+  <!-- Firebase (Compat libraries per semplicità) -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 </head>
@@ -242,88 +241,38 @@
   </div>
 
   <script>
-
-   const firebaseConfig = {
-      apiKey: "AIzaSyC064Avv3hq01r04UUeJmksDubmEghcyd8",
+    /**************************************************************
+     * 1) CONFIGURAZIONE FIREBASE                                 *
+     **************************************************************/
+    const firebaseConfig = {
+      apiKey: "AIzaSyC064A...",  // <-- Sostituisci con le tue
       authDomain: "fantasanremo-e87e8.firebaseapp.com",
       projectId: "fantasanremo-e87e8",
-      storageBucket: "fantasanremo-e87e8.firebasestorage.app",
+      storageBucket: "fantasanremo-e87e8.appspot.com",
       messagingSenderId: "133625821322",
       appId: "1:133625821322:web:268300a4ba9d09fa0b5573"
     };
 
-    // Inizializziamo Firebase e Firestore
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-    // Timer di sessione: 1 ora
-    const SESSION_DURATION = 3600000; // 1 ora in millisecondi
 
-    // Array di utenti
+    const SESSION_DURATION = 3600000; // 1 ora in ms
+    let currentUser = null;
+    let sessionTimer = null;
+
+    /**************************************************************
+     * 2) LISTA UTENTI                                            *
+     **************************************************************/
     const users = [
       { username: "Michele_I", password: "Fantasanremo25" },
       { username: "Michele_C", password: "Fantasanremo25" },
       { username: "Angelo_R", password: "Fantasanremo25" },
-      { username: "Michele_M", password: "Fantasanremo25" },
-      { username: "Chieppo", password: "Fantasanremo25" },
-      { username: "Pakistano", password: "Fantasanremo25" },
-      { username: "Luigi_O", password: "Fantasanremo25" },
-      { username: "Carmine", password: "Fantasanremo25" },
-      { username: "Gennaro", password: "Fantasanremo25" },
-      { username: "Fabrizio", password: "Fantasanremo25" },
-      { username: "Alessandro", password: "Fantasanremo25" },
-      { username: "Marco_B", password: "Fantasanremo25" },
-      { username: "Marco_S", password: "Fantasanremo25" },
-      { username: "Leo", password: "Fantasanremo25" },
-      { username: "Giovanni", password: "Fantasanremo25" },
-      { username: "Gianluca", password: "Fantasanremo25" },
-      { username: "Diomede", password: "Fantasanremo25" },
-      { username: "Angelo_F", password: "Fantasanremo25" },
-      { username: "Dario", password: "Fantasanremo25" },
-      { username: "Emy", password: "Fantasanremo25" },
-      { username: "Anita", password: "Fantasanremo25" },
-      { username: "Miriana", password: "Fantasanremo25" },
-      { username: "Giorgia", password: "Fantasanremo25" },
-      { username: "Flavia", password: "Fantasanremo25" },
-      { username: "Giusy", password: "Fantasanremo25" },
-      { username: "Alessandra", password: "Fantasanremo25" }
+      // Aggiungi gli altri...
     ];
 
-    let currentUser = null;
-    let sessionTimer = null;
-
-    // Per gestire i voti di ciascun utente, usiamo un oggetto in localStorage con i voti associati all'username.
-     userVotes = {
-     "Michele_I": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
-      "Michele_C": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
-    "Michele_M": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
-      "Angelo_R": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
-       "Angelo_F": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
-      "Chieppo": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
-       "Pakistano": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
-      "Luigi_O": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
-       "Fabrizio": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
-      "Gennaro": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
-       "Carmine": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
-      "Marco_B": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
-       "Marco_S": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
-      "Diomede": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
-       "Leo": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
-      "Anita": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
-       "Dario": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
-      "Emy": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
-       "Giovanni": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
-      "Giorgia": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
-       "Miriana": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
-      "Flavia": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
-       "Giusy": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
-      "Gianluca": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
-       "Alessandro": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
-      "Alessandra": [ {name, image, votes: {Canzone, Esibizione, Outfit}}, ... ],
-    // }
-
-    let userVotes = {};
-
-    // Lista artisti
+    /**************************************************************
+     * 3) LISTA ARTISTI + CATEGORIE                               *
+     **************************************************************/
     const characters = [
       "Achille Lauro", "Bresh", "Brunori SAS", "Clara", "Coma_Cose",
       "Elodie", "Emis Killa", "Fedez", "Francesca Michielin", "Francesco Gabbani",
@@ -333,35 +282,28 @@
       "Shablo ft. Guè, Joshua e Tormento", "Simone Cristicchi", "The Kolors", "Tony Effe", "Willie Peyote"
     ].sort();
 
-    // Categorie di voto
     const categories = ["Canzone", "Esibizione", "Outfit"];
 
-    // Al caricamento pagina, controlliamo se c'è una session valida
-    window.addEventListener("DOMContentLoaded", () => {
-      loadAllUsersVotes();
-      // Controlliamo se esiste una session in localStorage
+    /**************************************************************
+     * 4) CONTROLLA EVENTUALI SESSIONI GIA' ATTIVE                *
+     **************************************************************/
+    window.addEventListener("DOMContentLoaded", async () => {
       const storedUser = localStorage.getItem("currentSessionUser");
       const sessionExpiry = localStorage.getItem("sessionExpiry");
 
       if (storedUser && sessionExpiry) {
         const now = Date.now();
         if (now < parseInt(sessionExpiry)) {
-          // La sessione è ancora valida
           currentUser = storedUser;
           document.getElementById("loginContainer").style.display = "none";
           document.getElementById("characters").style.display = "block";
           document.querySelector(".results").style.display = "block";
 
-          // Avviamo il timer di logout
           startSessionTimer(parseInt(sessionExpiry) - now);
-          // Se l'utente non ha dati, inizializziamo
-          if (!userVotes[currentUser]) {
-            userVotes[currentUser] = initUserData();
-          }
 
-          renderCharacters();
-          renderResults();
-          return; // Evitiamo di mostrare la login
+          await renderCharacters(); // Carichiamo i dati
+          await renderResults();
+          return;
         } else {
           // Session scaduta
           localStorage.removeItem("currentSessionUser");
@@ -370,80 +312,43 @@
       }
     });
 
-    // Funzione di login
-    function login() {
+    /**************************************************************
+     * 5) LOGIN                                                   *
+     **************************************************************/
+    async function login() {
       const username = document.getElementById("username").value;
       const password = document.getElementById("password").value;
       const errorMessage = document.getElementById("errorMessage");
 
-      const user = users.find(
-        u => u.username === username && u.password === password
-      );
-
+      const user = users.find(u => u.username === username && u.password === password);
       if (user) {
         currentUser = username;
         document.getElementById("loginContainer").style.display = "none";
         document.getElementById("characters").style.display = "block";
         document.querySelector(".results").style.display = "block";
 
-        // Avviamo la session di 1 ora
+        // Session di 1 ora
         const expiry = Date.now() + SESSION_DURATION;
         localStorage.setItem("currentSessionUser", currentUser);
         localStorage.setItem("sessionExpiry", expiry);
         startSessionTimer(SESSION_DURATION);
 
-        loadAllUsersVotes();
-        if (!userVotes[currentUser]) {
-          userVotes[currentUser] = initUserData();
-        }
-        renderCharacters();
-        renderResults();
-        saveAllUsersVotes();
+        // Render + Dati
+        await renderCharacters();
+        await renderResults();
       } else {
         errorMessage.innerHTML = "Incorrect username or password.";
       }
     }
 
+    /**************************************************************
+     * 6) GESTIONE DATI UTENTE SU FIRESTORE                       *
+     **************************************************************/
+
+    // Ogni utente ha un doc in Firestore: /usersVotes/currentUser
+    // con structure: { votesArray: [ { name, image, votes: {...} }, ... ] }
+
     // Inizializza i dati di un utente
-    function initUserData() {
-      return characters.map(name => ({
-        name,
-        image: "https://picsum.photos/seed/" + name.replace(/\s+/g, "") + "/100",
-        votes: {
-          Canzone: 0,
-          Esibizione: 0,
-          Outfit: 0
-        }
-      }));
-    }
-
-    // Timer di sessione, effettua logout dopo timeMs
-    function startSessionTimer(timeMs) {
-      if (sessionTimer) {
-        clearTimeout(sessionTimer);
-      }
-      sessionTimer = setTimeout(() => {
-        alert("Session expired. Logging out...");
-        logout();
-      }, timeMs);
-    }
-
-  / 5a) Ottiene l'array di voti per l'utente corrente
-    async function getCurrentUserVotes() {
-      if (!currentUser) return [];
-      const docRef = db.collection("usersVotes").doc(currentUser);
-      const docSnap = await docRef.get();
-      if (docSnap.exists) {
-        return docSnap.data().votesArray;
-      } else {
-        // Se non esiste, creiamo
-        const newArray = initNewUserVotes();
-        await docRef.set({ votesArray: newArray });
-        return newArray;
-      }
-    }
-
-    // 5b) Inizializza i voti dell'utente (0)
     function initNewUserVotes() {
       return characters.map(name => ({
         name,
@@ -452,37 +357,52 @@
       }));
     }
 
-    // 5c) Salva i voti dell'utente corrente
-    async function saveCurrentUserVotes(votesArray) {
-      if (!currentUser) return;
-      await db.collection("usersVotes").doc(currentUser).set({ votesArray });
-    }
-
-    // 5d) Aggiorna un singolo voto (in tempo reale)
-    async function updateVote(charName, category, value) {
-      const numericValue = Math.max(0, Math.min(10, parseInt(value) || 0));
-      // Prendiamo i dati dell'utente
-      let userVotesArray = await getCurrentUserVotes();
-
-      // Troviamo l'artista e aggiorniamo
-      const idx = userVotesArray.findIndex(c => c.name === charName);
-      if (idx >= 0) {
-        userVotesArray[idx].votes[category] = numericValue;
-        await saveCurrentUserVotes(userVotesArray);
-        renderResults(); // Aggiorno la tabella globale
+    // Ritorna l'array con i voti dell'utente corrente
+    async function getCurrentUserVotes() {
+      if (!currentUser) return [];
+      const docRef = db.collection("usersVotes").doc(currentUser);
+      const snap = await docRef.get();
+      if (snap.exists) {
+        return snap.data().votesArray;
+      } else {
+        // Creiamo un doc se non esiste
+        const newArray = initNewUserVotes();
+        await docRef.set({ votesArray: newArray });
+        return newArray;
       }
     }
 
-    /*******************************************
-     * 6) RENDER PERSONAGGI + RISULTATI        *
-     *******************************************/
-    // Render dei personaggi (login utente)
+    // Salva i voti dell'utente corrente
+    async function saveCurrentUserVotes(votesArray) {
+      if (!currentUser) return;
+      await db.collection("usersVotes").doc(currentUser).set({
+        votesArray
+      });
+    }
+
+    // Update di un singolo voto
+    async function updateVote(charName, category, value) {
+      const numericValue = Math.max(0, Math.min(10, parseInt(value) || 0));
+
+      const votesArray = await getCurrentUserVotes();
+      const idx = votesArray.findIndex(c => c.name === charName);
+      if (idx >= 0) {
+        votesArray[idx].votes[category] = numericValue;
+        await saveCurrentUserVotes(votesArray);
+        renderResults(); // Ricalcoliamo i risultati globali
+      }
+    }
+
+    /**************************************************************
+     * 7) RENDER PERSONAGGI + RISULTATI                           *
+     **************************************************************/
     async function renderCharacters() {
-      const userData = await getCurrentUserVotes();
       const characterContainer = document.getElementById("characters");
       characterContainer.innerHTML = "";
 
-      userData.forEach(character => {
+      const votesArray = await getCurrentUserVotes();
+
+      votesArray.forEach(character => {
         const div = document.createElement("div");
         div.className = "character";
         div.innerHTML = `
@@ -504,19 +424,17 @@
       });
     }
 
-    // Rende i risultati globali (somma di tutti gli utenti)
+    // Somma i voti di tutti gli utenti
     async function renderResults() {
       const resultsTableBody = document.getElementById("resultsTableBody");
       resultsTableBody.innerHTML = "";
 
-      // Otteniamo la mappa di tutti i voti di tutti gli utenti
+      // Leggiamo tutti i doc in /usersVotes
       const aggregator = {};
-      // Carichiamo TUTTI i documenti da Firestore
       const snapshot = await db.collection("usersVotes").get();
-
       snapshot.forEach(docSnap => {
-        const userData = docSnap.data().votesArray; // array di {name, votes: {...}}
-        userData.forEach(artist => {
+        const arr = docSnap.data().votesArray || [];
+        arr.forEach(artist => {
           if (!aggregator[artist.name]) {
             aggregator[artist.name] = {
               name: artist.name,
@@ -529,12 +447,11 @@
         });
       });
 
-      // Convertiamo aggregator in array
+      // Convert in array
       const globalData = Object.values(aggregator).sort((a, b) =>
         a.name.localeCompare(b.name)
       );
 
-      // Creiamo le righe
       globalData.forEach(artist => {
         const total = categories.reduce((sum, cat) => sum + artist.votes[cat], 0);
         const row = document.createElement("tr");
@@ -549,9 +466,9 @@
       });
     }
 
-    /*******************************************
-     * 7) TIMER DI SESSIONE & LOGOUT           *
-     *******************************************/
+    /**************************************************************
+     * 8) SESSION TIMER & LOGOUT                                  *
+     **************************************************************/
     function startSessionTimer(timeMs) {
       if (sessionTimer) clearTimeout(sessionTimer);
       sessionTimer = setTimeout(() => {
@@ -571,20 +488,20 @@
       document.querySelector(".results").style.display = "none";
     }
 
-    /*******************************************
-     * 8) OPZIONALE: AGGIORNAMENTI REALTIME    *
-     *******************************************/
-    // Se vuoi che i risultati si aggiornino automaticamente
-    // appena un altro utente modifica i voti, puoi aggiungere:
-    *
+    /**************************************************************
+     * 9) REALTIME (OPZIONALE)                                    *
+     **************************************************************/
+    // Se vuoi aggiornare i risultati in tempo reale (anche su altri device),
+    // rimuovi i commenti:
+    /*
     db.collection("usersVotes").onSnapshot(() => {
-      // Ogni volta che Firestore cambia, rifacciamo:
+      // Ricarichiamo la tabella globale
       renderResults();
-      // Se vuoi aggiornare anche la view utente,
-      // devi ricaricare userVotes dell'utente, es.:
+      // Se vuoi aggiornare anche i voti dell'utente in corso
+      // (es. per riflettere cambi da altri dispositivi):
       if (currentUser) renderCharacters();
     });
-    /
+    */
   </script>
 </body>
 </html>
