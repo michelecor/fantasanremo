@@ -180,44 +180,6 @@
     .results tr:hover {
       background-color: #f1f1f1;
     }
-    /* Tabella riepilogo in ordine alfabetico */
-    .summary-table {
-      margin-top: 40px;
-    }
-    .summary-table h2 {
-      text-align: center;
-      font-size: 1.5em;
-      color: #001f54;
-    }
-    .summary-table table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 0 auto;
-      background-color: #ffffff;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      border-radius: 10px;
-      overflow: hidden;
-    }
-    .summary-table th,
-    .summary-table td {
-      padding: 15px;
-      text-align: center;
-      border-bottom: 1px solid #ddd;
-      font-size: 1.1em;
-    }
-    .summary-table th {
-      background-color: #001f54;
-      color: #fff;
-      text-transform: uppercase;
-      font-size: 1em;
-      letter-spacing: 1px;
-    }
-    .summary-table td {
-      color: #333;
-    }
-    .summary-table tr:hover {
-      background-color: #f1f1f1;
-    }
     @media (max-width: 768px) {
       #characters {
         grid-template-columns: 1fr;
@@ -225,10 +187,7 @@
       header h1 {
         font-size: 2em;
       }
-      .results th,
-      .results td,
-      .summary-table th,
-      .summary-table td {
+      .results th, .results td {
         font-size: 0.9em;
       }
     }
@@ -261,42 +220,27 @@
 
   <div id="characters" style="display: none;"></div>
 
+  <!-- Risultati con tabella in ordine alfabetico, eliminando la tabella decrescente -->
   <div class="results" style="display: none;">
-    <h2>Results</h2>
-    <!-- Tabella con i risultati (ordinati per voto decrescente) -->
+    <h2>Elenco artisti in ordine alfabetico</h2>
     <table>
       <thead>
         <tr>
-          <th>Artist</th>
+          <th>Artista</th>
           <th>Canzone</th>
           <th>Esibizione</th>
           <th>Outfit</th>
           <th>Total</th>
         </tr>
       </thead>
-      <tbody id="resultsTableBody"></tbody>
+      <tbody id="resultsTableBody">
+        <!-- Results will be dynamically loaded here -->
+      </tbody>
     </table>
-
-    <!-- Tabella riepilogativa con artisti in ordine alfabetico -->
-    <div class="summary-table">
-      <h2>Elenco artisti in ordine alfabetico</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Artist</th>
-            <th>Canzone</th>
-            <th>Esibizione</th>
-            <th>Outfit</th>
-            <th>Total</th>
-          </tr>
-        </thead>
-        <tbody id="summaryTableBody"></tbody>
-      </table>
-    </div>
   </div>
 
   <script>
-    // Array di utenti autorizzati
+    // Elenco utenti
     const users = [
       { username: "Michele_I", password: "Fantasanremo25" },
       { username: "Michele_C", password: "Fantasanremo25" },
@@ -326,36 +270,11 @@
       { username: "Alessandra", password: "Fantasanremo25" }
     ];
 
-    // Utente attualmente loggato
     let currentUser = null;
 
-    // Funzione di login
-    function login() {
-      const username = document.getElementById("username").value;
-      const password = document.getElementById("password").value;
-      const errorMessage = document.getElementById("errorMessage");
+    // Per gestire i voti di ciascun utente, usiamo un oggetto in localStorage con i voti associati all'username
 
-      // Verifica se username e password sono corretti
-      const user = users.find(u => u.username === username && u.password === password);
-
-      if (user) {
-        currentUser = user;
-        document.getElementById("loginContainer").style.display = "none";
-        document.getElementById("characters").style.display = "block";
-        document.querySelector(".results").style.display = "block";
-
-        // Carica eventuali dati salvati
-        loadFromLocalStorage();
-
-        // Renderizza personaggi e risultati
-        renderCharacters();
-        renderResults();
-      } else {
-        errorMessage.innerHTML = "Incorrect username or password.";
-      }
-    }
-
-    // Dati degli artisti
+    // Personaggi
     const characters = [
       "Achille Lauro", "Bresh", "Brunori SAS", "Clara", "Coma_Cose",
       "Elodie", "Emis Killa", "Fedez", "Francesca Michielin", "Francesco Gabbani",
@@ -363,29 +282,83 @@
       "Marcella Bella", "Massimo Ranieri", "Modà", "Noemi", "Olly",
       "Rkomi", "Rocco Hunt", "Rose Villain", "Sarah Toscano", "Serena Brancale",
       "Shablo ft. Guè, Joshua e Tormento", "Simone Cristicchi", "The Kolors", "Tony Effe", "Willie Peyote"
-    ].sort(); // Ordiniamo alfabeticamente i nomi
+    ].sort();
 
-    // Categorie di voto
+    // Categorie
     const categories = ["Canzone", "Esibizione", "Outfit"];
 
-    // Inizializziamo i dati di ogni artista
-    let characterData = characters.map(name => ({
-      name,
-      // Per le immagini di esempio usiamo un placeholder generico
-      image: "https://picsum.photos/seed/" + name.replace(/\s+/g, "") + "/100",
-      votes: {
-        Canzone: 0,
-        Esibizione: 0,
-        Outfit: 0
-      }
-    }));
+    // Oggetto che conterrà i voti per ciascun utente
+    let usersVotes = {};
 
-    // Renderizza i riquadri dei personaggi
+    // Quando effettuiamo il login, carichiamo i voti di quell'utente da localStorage
+    function login() {
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+      const errorMessage = document.getElementById("errorMessage");
+
+      const user = users.find(
+        u => u.username === username && u.password === password
+      );
+
+      if (user) {
+        currentUser = username;
+        document.getElementById("loginContainer").style.display = "none";
+        document.getElementById("characters").style.display = "block";
+        document.querySelector(".results").style.display = "block";
+
+        loadAllUsersVotes();
+        if (!usersVotes[currentUser]) {
+          // Se l'utente non ha ancora voti, inizializziamo
+          usersVotes[currentUser] = characters.map(name => ({
+            name,
+            image: "https://picsum.photos/seed/" + name.replace(/\s+/g, "") + "/100",
+            votes: {
+              Canzone: 0,
+              Esibizione: 0,
+              Outfit: 0
+            }
+          }));
+        }
+        renderCharacters();
+        renderResults();
+        saveAllUsersVotes();
+      } else {
+        errorMessage.innerHTML = "Incorrect username or password.";
+      }
+    }
+
+    // Carichiamo da localStorage l'oggetto con i voti di tutti gli utenti
+    function loadAllUsersVotes() {
+      const saved = localStorage.getItem("usersVotes");
+      if (saved) {
+        usersVotes = JSON.parse(saved);
+      } else {
+        usersVotes = {};
+      }
+    }
+
+    // Salviamo in localStorage l'oggetto con i voti di tutti gli utenti
+    function saveAllUsersVotes() {
+      localStorage.setItem("usersVotes", JSON.stringify(usersVotes));
+    }
+
+    // Ritorna la lista voti dell'utente attuale
+    function getCurrentUserData() {
+      return usersVotes[currentUser] || [];
+    }
+
+    // Restituisce l'indice di un dato personaggio
+    function findCharacterIndexByName(name) {
+      const userData = getCurrentUserData();
+      return userData.findIndex(c => c.name === name);
+    }
+
     function renderCharacters() {
       const characterContainer = document.getElementById("characters");
       characterContainer.innerHTML = "";
+      const userData = getCurrentUserData();
 
-      characterData.forEach((character, index) => {
+      userData.forEach((character, index) => {
         const characterDiv = document.createElement("div");
         characterDiv.className = "character";
         characterDiv.innerHTML = `
@@ -393,13 +366,17 @@
           <div>
             <h3>${character.name}</h3>
             <div class="votes">
-              ${categories.map(category => `
+              ${categories
+                .map(
+                  category => `
                   <label for="vote-${index}-${category}">${category}:</label>
                   <input type="number" id="vote-${index}-${category}" 
                          aria-label="Vote for ${character.name}'s ${category}" 
                          min="0" max="10" value="${character.votes[category]}" 
-                         onchange="updateVote(${index}, '${category}', this.value)" />
-              `).join("")}
+                         onchange="updateVote('${character.name}', '${category}', this.value)" />
+                `
+                )
+                .join("")}
             </div>
           </div>
         `;
@@ -407,45 +384,33 @@
       });
     }
 
-    // Aggiorna il voto di un artista in una certa categoria
-    function updateVote(index, category, value) {
-      const input = document.getElementById(`vote-${index}-${category}`);
+    // Quando aggiorniamo i voti, salviamo su localStorage e aggiorniamo la tabella
+    function updateVote(characterName, category, value) {
       const numericValue = Math.max(0, Math.min(10, parseInt(value) || 0));
-
-      if (numericValue < 0 || numericValue > 10) {
-        input.classList.add("invalid");
-      } else {
-        input.classList.remove("invalid");
-        characterData[index].votes[category] = numericValue;
-        saveToLocalStorage();
+      const userData = getCurrentUserData();
+      const idx = userData.findIndex(c => c.name === characterName);
+      if (idx !== -1) {
+        userData[idx].votes[category] = numericValue;
+        usersVotes[currentUser] = userData;
+        saveAllUsersVotes();
         renderResults();
       }
     }
 
-    // Renderizza i risultati in due tabelle:
-    // 1) Tabella principale, ordinata per punteggio decrescente
-    // 2) Tabella riepilogativa in ordine alfabetico
+    // Renderizza la tabella in ordine alfabetico, in tempo reale
     function renderResults() {
-      renderResultsByScore();
-      renderSummaryTable();
-    }
-
-    // Tabella ordinata per punteggio decrescente
-    function renderResultsByScore() {
       const resultsTableBody = document.getElementById("resultsTableBody");
-      // Svuotiamo la tabella
       resultsTableBody.innerHTML = "";
+      const userData = getCurrentUserData();
 
-      // Ordiniamo per punteggio totale decrescente
-      const sorted = [...characterData].sort((a, b) => {
-        const totalA = categories.reduce((sum, cat) => sum + a.votes[cat], 0);
-        const totalB = categories.reduce((sum, cat) => sum + b.votes[cat], 0);
-        return totalB - totalA; // decrescente
-      });
+      // Ordiniamo alfabeticamente per nome
+      const alphabetical = [...userData].sort((a, b) => a.name.localeCompare(b.name));
 
-      // Creiamo le righe
-      sorted.forEach(character => {
-        const totalVotes = categories.reduce((sum, cat) => sum + character.votes[cat], 0);
+      alphabetical.forEach(character => {
+        const totalVotes = categories.reduce(
+          (sum, cat) => sum + character.votes[cat],
+          0
+        );
         const row = document.createElement("tr");
         row.innerHTML = `
           <td>${character.name}</td>
@@ -458,46 +423,16 @@
       });
     }
 
-    // Tabella riepilogativa in ordine alfabetico
-    function renderSummaryTable() {
-      const summaryTableBody = document.getElementById("summaryTableBody");
-      if (!summaryTableBody) return; // In caso la sezione non esista
-
-      // Svuotiamo la tabella
-      summaryTableBody.innerHTML = "";
-
-      // Ordiniamo alfabeticamente per nome
-      const alphabetical = [...characterData].sort((a, b) => a.name.localeCompare(b.name));
-
-      alphabetical.forEach(character => {
-        const totalVotes = categories.reduce((sum, cat) => sum + character.votes[cat], 0);
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${character.name}</td>
-          <td>${character.votes.Canzone}</td>
-          <td>${character.votes.Esibizione}</td>
-          <td>${character.votes.Outfit}</td>
-          <td>${totalVotes}</td>
-        `;
-        summaryTableBody.appendChild(row);
-      });
+    // Logout
+    function logout() {
+      currentUser = null;
+      document.getElementById("loginContainer").style.display = "flex";
+      document.getElementById("characters").style.display = "none";
+      document.querySelector(".results").style.display = "none";
     }
 
-    // Salvataggio su localStorage
-    function saveToLocalStorage() {
-      localStorage.setItem("characterVotes", JSON.stringify(characterData));
-    }
-
-    // Caricamento da localStorage
-    function loadFromLocalStorage() {
-      const savedData = localStorage.getItem("characterVotes");
-      if (savedData) {
-        characterData = JSON.parse(savedData);
-      }
-    }
-
-    // Salva i dati prima di lasciare la pagina
-    window.addEventListener("beforeunload", saveToLocalStorage);
+    // Salviamo quando si chiude la pagina
+    window.addEventListener("beforeunload", saveAllUsersVotes);
   </script>
 </body>
 </html>
